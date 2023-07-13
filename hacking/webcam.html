@@ -4,3 +4,66 @@
     <title>Ongar.dev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333333;
+        }
+
+        p {
+            color: #666666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #infoText {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ongar.dev</h1>
+    <div>
+        <p>Ваши фотки хранятся локально и уничтожаются когда вы обновляете сайт. Этот пример показывает на то что когда вы разрешаете веб сайтам доступ к вашему камере они могут использовать ваши конфиденциальные данные во благо им. Так что чаще обновляйте браузер в настройках уберите доступ к камере всем веб сайтам и поставьте запрет. C уважением Ongar.dev</p>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <img id="photo" src="" alt="">
+        <p id="infoText"></p>
+    </div>
+
+    <script>
+        const video = document.createElement('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const photo = document.getElementById('photo');
+        const infoText = document.getElementById('infoText');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+                video.play();
+                setTimeout(function() {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imgUrl = canvas.toDataURL();
+                    photo.setAttribute('src', imgUrl);
+                    photo.style.display = 'inline';
+
+                    infoText.textContent = "Ваша фотка хранится локально. После того как сделаете обновление или выйдите с сайта оно уничтожится!";
+                }, 2000); // Задержка 2 секунды
+            })
+            .catch(function (error) {
+                console.error('Error accessing the webcam: ', error);
+            });
+    </script>
+</body>
+</html>
