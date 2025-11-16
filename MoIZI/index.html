@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoIZI</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="light">
+
+<div class="theme-toggle" onclick="toggleTheme()"></div>
+
+<div class="container">
+    <h2>MoIZI - оңай түрде структураны тап.</h2>
+
+    <div class="input-row">
+        <input id="formulaInput" type="text" placeholder= "Мысалы: Cu(OH)2, H2SO4">
+        <button id="searchBtn">🪄</button>
+    </div>
+
+    <div id="imageBox">
+        <img id="molImage" src="" alt="">
+        <div id="status"></div>
+    </div>
+
+    <button id="downloadBtn" class="hidden">Download</button>
+</div>
+
+<script src="assets/script.js"></script>
+</body>
+</html>
