@@ -1,0 +1,188 @@
+<!doctype html>
+<html manifest_no_use="gen3D.manifest1">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+	<META http-equiv="X-UA-Compatible" content="IE=edge" ></META>
+	<meta charset="utf-8">
+	<title>MolView.kz</title>
+
+	<script src="./libs/Three.js"></script>	
+	
+	<script src="./libs/kekule/kekule.min.js"></script>	
+	
+	<link rel="stylesheet" type="text/css" href="./libs/kekule/themes/default/kekule.css" />	
+	<style>
+		html, body
+		{
+			padding: 0;
+			margin: 0;
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
+		#stage
+		{
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: row;
+		}
+
+		@media (orientation: portrait) {
+		#stage 
+		{
+			flex-direction: column;
+		}
+}
+
+		.PrimaryPanel
+		{
+			padding: 0;
+			margin: 0;
+			position: relative;			
+			/*
+			width: 49%;
+			height: 99%;
+			min-width: 500px;
+			min-height: 300px;			
+			float: left;	
+			*/
+			flex: 1 1 50%;
+		}
+
+		#composer, #viewer
+		{
+			position: absolute;			
+			top: 0.5em;
+			left: 0.5em;
+			right: 0.5em;
+			bottom: 0.5em;
+			width: auto;
+			height: auto;			
+		}
+		#viewer
+		{
+			margin-bottom: 2.5em;
+		}		
+		#panelReport
+		{
+			position: absolute;
+			bottom: 0.5em;		
+			right: 0.5em;
+			text-align: right;	
+		}
+		.ExtraComposerToolButton .K-Pri-Glyph-Content
+		{
+			display: inline-block;
+			width: 0;
+			height: 24px;
+		}
+	</style>
+	<script>
+		var composer, viewer, btnGen, btnTerminate;
+
+		function report(stateText)
+		{
+			document.getElementById('state').innerHTML = stateText;
+		}
+		
+		function getCurrMol()
+		{			
+			return Kekule.ChemStructureUtils.getTotalStructFragment(composer.getChemObj());
+		}
+		
+		function calcStart()
+		{
+			btnGen.setEnabled(false);
+			btnTerminate.setEnabled(true);
+			timeStart = Date.now();
+		}
+		function calcEnd()
+		{
+			btnGen.setEnabled(true);
+			btnTerminate.setEnabled(false);
+			timeEnd = Date.now();
+		}
+		function generate3D()
+		{
+			var mol = getCurrMol();
+			report('Есептеу...');
+			calcStart();
+			calculator = Kekule.Calculator.generate3D(mol, {'forceField': ''},
+				function(generatedMol){
+					calcEnd();
+					var elapse = (timeEnd - timeStart) / 1000;
+					viewer.setChemObj(generatedMol);
+					report('Есептеу аяқталды,' + elapse + 'Гений');
+				},
+				function(err)
+				{
+					if (err)
+					{
+						calcEnd();
+						report(err.getMessage? err.getMessage(): err);
+						Kekule.error(err);					
+					}
+				}
+			);
+		}
+		function terminate()
+		{
+			report('Есептеуді пайдаланушы тоқтатты');
+			calcEnd();
+			if (calculator)
+			{
+				calculator.halt();			
+			}		
+		}
+
+
+		function init()
+		{
+			Kekule.OpenBabel.enable();
+
+			var BNS = Kekule.ChemWidget.ComponentWidgetNames;
+			composer = Kekule.Widget.getWidgetById('composer');
+			viewer = Kekule.Widget.getWidgetById('viewer');
+			viewer.setEnableTouchInteraction(true).setEnableGesture(true);
+			composer.setCommonToolButtons([
+				BNS.newDoc,
+				BNS.loadData,
+				BNS.saveData,
+				BNS.undo,
+				BNS.redo,
+				{
+					'id': 'btnGen',
+					'htmlClass': 'ExtraComposerToolButton',
+					'text': 'Есептеу', 'hint': 'Молекуланың доминантты конформациясын есептеңіз', 'showText': true, 'showGlyph': false, 'cssText': 'width:auto',
+			      '#execute': generate3D
+			    },
+			    {
+					'id': 'btnTerminate',
+					'htmlClass': 'ExtraComposerToolButton',
+					'text': 'Тоқтату', 'hint': 'Конформацияны есептеу процесін тоқтату', 'showText': true, 'showGlyph': false, 'cssText': 'width:auto',
+			    	'#execute': terminate
+			    }
+			]);
+			btnGen = Kekule.Widget.getWidgetById('btnGen');
+			btnTerminate = Kekule.Widget.getWidgetById('btnTerminate');
+			btnTerminate.setEnabled(false);
+		}		
+		Kekule.X.domReady(init);
+	</script>	
+
+</head>
+<body>
+	<div id="stage">
+		<div class="PrimaryPanel" id="panelInput">
+			<div id="composer" data-widget="Kekule.Editor.Composer" data-chem-obj="url(#molSrc)" data-predefined-setting="molOnly"></div>
+		</div>	
+		<div class="PrimaryPanel" id="panelOutput">		
+			<div id="viewer" data-widget="Kekule.ChemWidget.Viewer3D" data-predefined-setting="fullFunc" data-toolbar-evoke-modes="[0]"
+				data-tool-buttons='["saveData", "molDisplayType", "molHideHydrogens", "zoomIn", "zoomOut", "reset"]'
+				data-toolbar-pos="1" data-toolbar-margin-horizontal="0" data-toolbar-margin-vertical="0" data-enable-touch-interaction="true"></div>
+			<div id="panelReport"><span id="state"> </span></div>
+		</div>
+	</div>
+</body>
+</html>
