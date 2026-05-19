@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PS5 Tournament Invitation</title>
+<title>PS5 Tурнирма?</title>
 
 <style>
 
@@ -126,6 +126,79 @@ border-radius:20px;
 box-shadow:0 0 25px rgba(0,0,0,.5);
 }
 
+/* ===== MOBILE ADAPTATION ===== */
+
+@media (max-width: 768px) {
+
+h1{
+font-size:38px;
+}
+
+.ps{
+font-size:60px;
+}
+
+.subtitle{
+font-size:18px;
+}
+
+.container{
+padding:25px;
+border-radius:20px;
+}
+
+.info{
+font-size:16px;
+}
+
+.player{
+padding:15px;
+}
+
+.player h2{
+font-size:16px;
+}
+
+.buttons{
+flex-direction:column;
+gap:12px;
+}
+
+.btn{
+width:100%;
+padding:14px;
+font-size:16px;
+}
+
+iframe{
+height:220px;
+}
+}
+
+@media (max-width: 480px) {
+
+h1{
+font-size:30px;
+}
+
+.ps{
+font-size:45px;
+}
+
+.subtitle{
+font-size:16px;
+}
+
+.container{
+padding:18px;
+}
+
+#message{
+font-size:20px;
+}
+
+}
+
 </style>
 </head>
 
@@ -203,7 +276,7 @@ document.getElementById("message").innerHTML=
 function showArmy(){
 document.getElementById("videoBox").style.display="none";
 document.getElementById("message").innerHTML=
-"📩 Повестка в военкомат уже готовится...<br><br>ВНИМАНИЕ!!! ТВои данные были отправлены. Поедешь служить жердын котындегы БЕЙНЕУГЕ!";
+"📩 Повестка в военкомат уже готовится...<br><br>ВНИМАНИЕ!!! Твои данные были отправлены. Поедешь служить жердын котындегы БЕЙНЕУГЕ!";
 }
 
 </script>
