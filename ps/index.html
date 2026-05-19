@@ -109,13 +109,19 @@ color:white;
 
 #message{
 margin-top:30px;
-font-size:30px;
+font-size:28px;
 font-weight:bold;
 color:#ff4444;
 }
 
-iframe{
+#videoBox{
+display:none;
 margin-top:25px;
+}
+
+iframe{
+width:100%;
+height:315px;
 border-radius:20px;
 box-shadow:0 0 25px rgba(0,0,0,.5);
 }
@@ -138,29 +144,12 @@ box-shadow:0 0 25px rgba(0,0,0,.5);
 
 <div class="players">
 
-<div class="player">
-<h2>Нурасыл Красавчикулы</h2>
-</div>
-
-<div class="player">
-<h2>Еркебулан Соскаулы</h2>
-</div>
-
-<div class="player">
-<h2>Акежан Атарскийулы</h2>
-</div>
-
-<div class="player">
-<h2>Дамир Самецулы</h2>
-</div>
-
-<div class="player">
-<h2>Мурагер Чемпионулы</h2>
-</div>
-
-<div class="player">
-<h2>Онгарский</h2>
-</div>
+<div class="player"><h2>Нурасыл Красавчикулы</h2></div>
+<div class="player"><h2>Еркебулан Соскаулы</h2></div>
+<div class="player"><h2>Акежан Атарскийулы</h2></div>
+<div class="player"><h2>Дамир Самецулы</h2></div>
+<div class="player"><h2>Мурагер Чемпионулы</h2></div>
+<div class="player"><h2>Онгарский</h2></div>
 
 </div>
 
@@ -171,10 +160,9 @@ box-shadow:0 0 25px rgba(0,0,0,.5);
 📍 Место: ОРГАНИЗУЙ<br><br>
 
 Готовьте джойстики.<br>
-Проигравших ждут оправдания и станцует тверк 😎🔥
+Проигравших ждут оправдания и танцы 😎🔥
 
 </div>
-
 
 <div class="buttons">
 
@@ -188,18 +176,15 @@ box-shadow:0 0 25px rgba(0,0,0,.5);
 
 </div>
 
-
 <div id="message"></div>
 
-
-<div id="videoBox" style="display:none;">
+<div id="videoBox">
 
 <iframe
-width="100%"
-height="315"
-src="/assets/ssstik.io_@rodya.owner_1779197835165.mp4"
-title="Sigma video"
+src="https://www.youtube.com/embed/frAhxXbLetk"
+title="Sigma Boy"
 frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 allowfullscreen>
 </iframe>
 
@@ -207,26 +192,18 @@ allowfullscreen>
 
 </div>
 
-
 <script>
 
 function showSigma(){
-
 document.getElementById("videoBox").style.display="block";
-
 document.getElementById("message").innerHTML=
-"😎 Настоящие сигмы приходят на турнир";
-
+"😎 Sigma режим активирован";
 }
 
-
 function showArmy(){
-
 document.getElementById("videoBox").style.display="none";
-
 document.getElementById("message").innerHTML=
-"📩 Повестка в военкомат уже готовится...<br><br>ВНИМАНИЕ<br>Твои данные были отправлены. Будешь служить жердын котындегы БЕЙНЕУДЕ";
-
+"📩 Повестка в военкомат уже готовится...<br><br>ШУТКА 😭 но не пропускай турнир";
 }
 
 </script>
