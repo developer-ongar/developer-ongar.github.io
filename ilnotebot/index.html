@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ввод анализов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 10px; margin: 0; background: #f5f5f5; }
+        h3 { text-align: center; margin-top: 5px; color: #333; }
+        .grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 70px; }
+        .row { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .label { font-weight: bold; font-size: 14px; width: 40%; }
+        .inputs { display: flex; gap: 6px; width: 55%; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px; border-top: 1px solid #ddd; }
+        button { width: 100%; padding: 12px; background: #2481cc; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h3>📋 Таблица замеров</h3>
+    <div id="table" class="grid"></div>
+
+    <div class="footer">
+        <button onclick="sendData()">💾 Сохранить и отправить</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const points = [
+            "Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6",
+            "УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя",
+            "Исх. вода", "Фильтр 1", "Фильтр 2", "Фильтр 3", "Фильтр 4", "Фильтр 5",
+            "Фильтр 6", "Фильтр 7", "Фильтр 8", "Фильтр 9", "Фильтр 10", "Фильтр 11",
+            "Фильтр 12", "Оборотная вода"
+        ];
+
+        const container = document.getElementById('table');
+
+        points.forEach((pt, index) => {
+            const row = document.createElement('div');
+            row.className = 'row';
+            row.innerHTML = `
+                <div class="label">${pt}</div>
+                <div class="inputs">
+                    <input type="text" id="cl_${index}" placeholder="Хлор">
+                    <input type="text" id="turb_${index}" placeholder="Мутн.">
+                </div>
+            `;
+            container.appendChild(row);
+        });
+
+        function sendData() {
+            const result = [];
+            points.forEach((pt, index) => {
+                const cl = document.getElementById(`cl_${index}`).value.trim() || "—";
+                const turb = document.getElementById(`turb_${index}`).value.trim() || "—";
+                result.push({ point: pt, chlorine: cl, turbidity: turb });
+            });
+
+            tg.sendData(JSON.stringify(result));
+        }
+    </script>
+</body>
+</html>
