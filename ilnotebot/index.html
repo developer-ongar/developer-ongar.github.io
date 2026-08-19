@@ -2,63 +2,243 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ввод анализов</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 10px; margin: 0; background: #f5f5f5; }
-        h3 { text-align: center; margin-top: 5px; color: #333; }
-        .grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 70px; }
-        .row { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .label { font-weight: bold; font-size: 14px; width: 40%; }
-        .inputs { display: flex; gap: 6px; width: 55%; }
-        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; text-align: center; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px; border-top: 1px solid #ddd; }
-        button { width: 100%; padding: 12px; background: #2481cc; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        :root {
+            --bg: var(--tg-theme-secondary-bg-color, #f0f0f2);
+            --card-bg: var(--tg-theme-bg-color, #ffffff);
+            --text: var(--tg-theme-text-color, #000000);
+            --hint: var(--tg-theme-hint-color, #8e8e93);
+            --accent: var(--tg-theme-button-color, #2481cc);
+            --border: rgba(60, 60, 67, 0.12);
+            --dot-active: #34c759;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px 12px 32px 12px;
+        }
+
+        .header {
+            margin: 0 0 16px 8px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 2px 0;
+            letter-spacing: -0.4px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: var(--hint);
+            margin: 0;
+        }
+
+        .section-header {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: var(--hint);
+            margin: 18px 0 6px 12px;
+            letter-spacing: 0.2px;
+        }
+
+        .group-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0.5px 1px rgba(0,0,0,0.04);
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            position: relative;
+        }
+
+        .row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 12px;
+            height: 0.5px;
+            background: var(--border);
+        }
+
+        .label-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 45%;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: transparent;
+            transition: background 0.2s ease;
+        }
+
+        .row.filled .status-dot {
+            background: var(--dot-active);
+        }
+
+        .label {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 6px;
+            width: 52%;
+        }
+
+        input {
+            width: 100%;
+            padding: 6px 4px;
+            background: var(--bg);
+            color: var(--text);
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        input:focus {
+            background: rgba(36, 129, 204, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--hint);
+            font-weight: 400;
+            font-size: 12px;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
 
-    <h3>📋 Таблица замеров</h3>
-    <div id="table" class="grid"></div>
-
-    <div class="footer">
-        <button onclick="sendData()">💾 Сохранить и отправить</button>
+    <div class="header">
+        <h1>Замеры</h1>
+        <p>Введите показания параметров</p>
     </div>
+
+    <div id="table"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const points = [
-            "Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6",
-            "УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя",
-            "Исх. вода", "Фильтр 1", "Фильтр 2", "Фильтр 3", "Фильтр 4", "Фильтр 5",
-            "Фильтр 6", "Фильтр 7", "Фильтр 8", "Фильтр 9", "Фильтр 10", "Фильтр 11",
-            "Фильтр 12", "Оборотная вода"
+        // Настройка родной кнопки Telegram MainButton
+        tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
+        tg.MainButton.onClick(() => sendData());
+
+        const groups = [
+            {
+                title: "Насосы",
+                items: ["Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6"]
+            },
+            {
+                title: "Управление и коллекторы",
+                items: ["УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя", "Исх. вода", "Оборотная вода"]
+            },
+            {
+                title: "Фильтры",
+                items: [
+                    "Фильтр 1", "Фильтр 2", "Фильтр 3", "Фильтр 4", "Фильтр 5", "Фильтр 6",
+                    "Фильтр 7", "Фильтр 8", "Фильтр 9", "Фильтр 10", "Фильтр 11", "Фильтр 12"
+                ]
+            }
         ];
 
         const container = document.getElementById('table');
+        let globalIndex = 0;
+        const allPoints = [];
 
-        points.forEach((pt, index) => {
-            const row = document.createElement('div');
-            row.className = 'row';
-            row.innerHTML = `
-                <div class="label">${pt}</div>
-                <div class="inputs">
-                    <input type="text" id="cl_${index}" placeholder="Хлор">
-                    <input type="text" id="turb_${index}" placeholder="Мутн.">
-                </div>
-            `;
-            container.appendChild(row);
+        groups.forEach(group => {
+            const groupHeader = document.createElement('div');
+            groupHeader.className = 'section-header';
+            groupHeader.innerText = group.title;
+            container.appendChild(groupHeader);
+
+            const groupCard = document.createElement('div');
+            groupCard.className = 'group-card';
+
+            group.items.forEach(pt => {
+                const index = globalIndex++;
+                allPoints.push(pt);
+
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.id = `row_${index}`;
+                row.innerHTML = `
+                    <div class="label-wrap">
+                        <div class="status-dot"></div>
+                        <div class="label">${pt}</div>
+                    </div>
+                    <div class="inputs">
+                        <input type="text" inputmode="decimal" id="cl_${index}" placeholder="Cl" oninput="checkState(${index})">
+                        <input type="text" inputmode="decimal" id="turb_${index}" placeholder="Turb" oninput="checkState(${index})">
+                    </div>
+                `;
+                groupCard.appendChild(row);
+            });
+
+            container.appendChild(groupCard);
         });
 
+        function checkState(index) {
+            const cl = document.getElementById(`cl_${index}`).value.trim();
+            const turb = document.getElementById(`turb_${index}`).value.trim();
+            const row = document.getElementById(`row_${index}`);
+
+            if (cl || turb) {
+                row.classList.add('filled');
+            } else {
+                row.classList.remove('filled');
+            }
+
+            // Показываем кнопку MainButton если заполнен хотя бы один элемент
+            const hasData = allPoints.some((_, i) => {
+                return document.getElementById(`cl_${i}`).value.trim() !== "" || 
+                       document.getElementById(`turb_${i}`).value.trim() !== "";
+            });
+
+            if (hasData) {
+                tg.MainButton.show();
+            } else {
+                tg.MainButton.hide();
+            }
+        }
+
         function sendData() {
-            const result = [];
-            points.forEach((pt, index) => {
+            const result = allPoints.map((pt, index) => {
                 const cl = document.getElementById(`cl_${index}`).value.trim() || "—";
                 const turb = document.getElementById(`turb_${index}`).value.trim() || "—";
-                result.push({ point: pt, chlorine: cl, turbidity: turb });
+                return { point: pt, chlorine: cl, turbidity: turb };
             });
 
             tg.sendData(JSON.stringify(result));
