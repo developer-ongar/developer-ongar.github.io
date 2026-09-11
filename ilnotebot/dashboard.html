@@ -39,91 +39,100 @@
     <!-- Сетка графиков -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         
-        <!-- 1. Исходная вода -->
+        <!-- 1. Исходная вода — БВО-1 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-cyan-400">🌊 1. Исходная вода (Мутность)</h2>
-                <div class="relative h-52"><canvas id="chartRaw"></canvas></div>
+                <h2 class="text-base font-semibold mb-3 text-cyan-400">🌊 1. Исходная вода — БВО-1</h2>
+                <div class="relative h-52"><canvas id="chartRawBvo1"></canvas></div>
             </div>
-            <div id="stats-chartRaw"></div>
+            <div id="stats-chartRawBvo1"></div>
         </div>
 
-        <!-- 2. После СМ — БВО-1 -->
+        <!-- 2. Исходная вода — БВО-2 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-emerald-400">🧪 2. После СМ — БВО-1</h2>
+                <h2 class="text-base font-semibold mb-3 text-cyan-300">🌊 2. Исходная вода — БВО-2</h2>
+                <div class="relative h-52"><canvas id="chartRawBvo2"></canvas></div>
+            </div>
+            <div id="stats-chartRawBvo2"></div>
+        </div>
+
+        <!-- 3. После СМ — БВО-1 -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+            <div>
+                <h2 class="text-base font-semibold mb-3 text-emerald-400">🧪 3. После СМ — БВО-1</h2>
                 <div class="relative h-52"><canvas id="chartSmBvo1"></canvas></div>
             </div>
             <div id="stats-chartSmBvo1"></div>
         </div>
 
-        <!-- 3. После СМ — БВО-2 -->
+        <!-- 4. После СМ — БВО-2 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-emerald-300">🧪 3. После СМ — БВО-2</h2>
+                <h2 class="text-base font-semibold mb-3 text-emerald-300">🧪 4. После СМ — БВО-2</h2>
                 <div class="relative h-52"><canvas id="chartSmBvo2"></canvas></div>
             </div>
             <div id="stats-chartSmBvo2"></div>
         </div>
 
-        <!-- 4. Фильтры — БВО-1 -->
+        <!-- 5. Фильтры — БВО-1 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-blue-400">🧹 4. Фильтры — БВО-1</h2>
+                <h2 class="text-base font-semibold mb-3 text-blue-400">🧹 5. Фильтры — БВО-1</h2>
                 <div class="relative h-52"><canvas id="chartFiltersBvo1"></canvas></div>
             </div>
             <div id="stats-chartFiltersBvo1"></div>
         </div>
 
-        <!-- 5. Фильтры — БВО-2 -->
+        <!-- 6. Фильтры — БВО-2 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-purple-400">🧹 5. Фильтры — БВО-2</h2>
+                <h2 class="text-base font-semibold mb-3 text-purple-400">🧹 6. Фильтры — БВО-2</h2>
                 <div class="relative h-52"><canvas id="chartFiltersBvo2"></canvas></div>
             </div>
             <div id="stats-chartFiltersBvo2"></div>
         </div>
 
-        <!-- 6. КФВ — БВО-1 -->
+        <!-- 7. КФВ — БВО-1 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-teal-400">💧 6. КФВ — БВО-1</h2>
+                <h2 class="text-base font-semibold mb-3 text-teal-400">💧 7. КФВ — БВО-1</h2>
                 <div class="relative h-52"><canvas id="chartKfvBvo1"></canvas></div>
             </div>
             <div id="stats-chartKfvBvo1"></div>
         </div>
 
-        <!-- 7. КФВ — БВО-2 -->
+        <!-- 8. КФВ — БВО-2 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-teal-300">💧 7. КФВ — БВО-2</h2>
+                <h2 class="text-base font-semibold mb-3 text-teal-300">💧 8. КФВ — БВО-2</h2>
                 <div class="relative h-52"><canvas id="chartKfvBvo2"></canvas></div>
             </div>
             <div id="stats-chartKfvBvo2"></div>
         </div>
 
-        <!-- 8. Коллектор — БВО-1 -->
+        <!-- 9. Коллектор — БВО-1 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-pink-400">🔀 8. Коллектор — БВО-1</h2>
+                <h2 class="text-base font-semibold mb-3 text-pink-400">🔀 9. Коллектор — БВО-1</h2>
                 <div class="relative h-52"><canvas id="chartCollectorBvo1"></canvas></div>
             </div>
             <div id="stats-chartCollectorBvo1"></div>
         </div>
 
-        <!-- 9. Коллектор — БВО-2 -->
+        <!-- 10. Коллектор — БВО-2 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-pink-300">🔀 9. Коллектор — БВО-2</h2>
+                <h2 class="text-base font-semibold mb-3 text-pink-300">🔀 10. Коллектор — БВО-2</h2>
                 <div class="relative h-52"><canvas id="chartCollectorBvo2"></canvas></div>
             </div>
             <div id="stats-chartCollectorBvo2"></div>
         </div>
 
-        <!-- 10. Насосы / Насосная станция -->
+        <!-- 11. Насосная станция -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 lg:col-span-2 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-amber-400">𚰠 10. Насосная станция (Насосы)</h2>
+                <h2 class="text-base font-semibold mb-3 text-amber-400">🚰 11. Насосная станция (Насосы)</h2>
                 <div class="relative h-56"><canvas id="chartPumps"></canvas></div>
             </div>
             <div id="stats-chartPumps"></div>
@@ -320,26 +329,27 @@
         }
 
         function renderAllCharts(data) {
-            // 1. Исходная вода
-            renderDualChart('chartRaw', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая']));
+            // 1-2. Исходная вода — БВО-1 и БВО-2
+            renderDualChart('chartRawBvo1', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая'], 'БВО-1'));
+            renderDualChart('chartRawBvo2', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая'], 'БВО-2'));
 
-            // 2-3. После СМ — БВО-1 и БВО-2
+            // 3-4. После СМ — БВО-1 и БВО-2
             renderDualChart('chartSmBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-1'));
             renderDualChart('chartSmBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-2'));
 
-            // 4-5. Фильтры — БВО-1 и БВО-2
+            // 5-6. Фильтры — БВО-1 и БВО-2
             renderDualChart('chartFiltersBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-1'));
             renderDualChart('chartFiltersBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-2'));
 
-            // 6-7. КФВ — БВО-1 и БВО-2
+            // 7-8. КФВ — БВО-1 и БВО-2
             renderDualChart('chartKfvBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-1'));
             renderDualChart('chartKfvBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-2'));
 
-            // 8-9. Коллектор — БВО-1 и БВО-2
+            // 9-10. Коллектор — БВО-1 и БВО-2
             renderDualChart('chartCollectorBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-1'));
             renderDualChart('chartCollectorBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-2'));
 
-            // 10. Насосы
+            // 11. Насосы
             renderDualChart('chartPumps', ['chlorine', 'turbidity'], filterPoints(data, ['насос', 'нс']));
         }
 
