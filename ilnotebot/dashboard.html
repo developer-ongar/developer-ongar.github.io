@@ -24,29 +24,11 @@
         </button>
     </header>
 
-    <!-- Настройка API -->
-    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mb-6 flex flex-col sm:flex-row items-center gap-3">
-        <label for="apiUrl" class="text-xs text-slate-400 whitespace-nowrap">URL REST API:</label>
-        <input type="text" id="apiUrl" value="https://ilnote-bot-production.up.railway.app/api/data" 
-               class="bg-slate-900 border border-slate-600 text-sm rounded-lg px-3 py-1.5 w-full text-blue-300 focus:outline-none focus:border-blue-500">
-        <button onclick="loadData()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-500">
-            Сохранить
-        </button>
-    </div>
-
     <!-- Общие показатели -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-xs text-slate-400 mb-1">Всего замеров</div>
+            <div class="text-xs text-slate-400 mb-1">Всего проб отобрано</div>
             <div id="statTotal" class="text-2xl font-bold text-white">—</div>
-        </div>
-        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-xs text-slate-400 mb-1">Ср. Хлор (Общий)</div>
-            <div id="statAvgCl" class="text-2xl font-bold text-emerald-400">—</div>
-        </div>
-        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="text-xs text-slate-400 mb-1">Ср. Мутность (Общая)</div>
-            <div id="statAvgTurb" class="text-2xl font-bold text-amber-400">—</div>
         </div>
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
             <div class="text-xs text-slate-400 mb-1">Последняя запись</div>
@@ -120,19 +102,28 @@
             <div id="stats-chartKfvBvo2"></div>
         </div>
 
-        <!-- 8. Общий коллектор -->
+        <!-- 8. Коллектор — БВО-1 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-pink-400">🔀 8. Общий коллектор</h2>
-                <div class="relative h-52"><canvas id="chartCollector"></canvas></div>
+                <h2 class="text-base font-semibold mb-3 text-pink-400">🔀 8. Коллектор — БВО-1</h2>
+                <div class="relative h-52"><canvas id="chartCollectorBvo1"></canvas></div>
             </div>
-            <div id="stats-chartCollector"></div>
+            <div id="stats-chartCollectorBvo1"></div>
         </div>
 
-        <!-- 9. Насосы / Насосная станция -->
+        <!-- 9. Коллектор — БВО-2 -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+            <div>
+                <h2 class="text-base font-semibold mb-3 text-pink-300">🔀 9. Коллектор — БВО-2</h2>
+                <div class="relative h-52"><canvas id="chartCollectorBvo2"></canvas></div>
+            </div>
+            <div id="stats-chartCollectorBvo2"></div>
+        </div>
+
+        <!-- 10. Насосы / Насосная станция -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 lg:col-span-2 flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-semibold mb-3 text-amber-400">🚰 9. Насосная станция (Насосы)</h2>
+                <h2 class="text-base font-semibold mb-3 text-amber-400">𚰠 10. Насосная станция (Насосы)</h2>
                 <div class="relative h-56"><canvas id="chartPumps"></canvas></div>
             </div>
             <div id="stats-chartPumps"></div>
@@ -171,6 +162,7 @@
             window.Telegram.WebApp.expand();
         }
 
+        const API_URL = 'https://ilnote-bot-production.up.railway.app/api/data';
         const chartInstances = {};
 
         function parseNum(val) {
@@ -198,11 +190,10 @@
         }
 
         async function loadData() {
-            const apiEndpoint = document.getElementById('apiUrl').value.trim();
             const tableBody = document.getElementById('tableBody');
 
             try {
-                const response = await fetch(apiEndpoint);
+                const response = await fetch(API_URL);
                 if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
                 
                 const data = await response.json();
@@ -224,16 +215,6 @@
 
         function updateStats(data) {
             document.getElementById('statTotal').innerText = data.length;
-
-            const clVals = data.map(d => parseNum(d.chlorine)).filter(v => v !== null);
-            const turbVals = data.map(d => parseNum(d.turbidity)).filter(v => v !== null);
-
-            if (clVals.length > 0) {
-                document.getElementById('statAvgCl').innerText = `${(clVals.reduce((a, b) => a + b, 0) / clVals.length).toFixed(2)} мг/л`;
-            }
-            if (turbVals.length > 0) {
-                document.getElementById('statAvgTurb').innerText = `${(turbVals.reduce((a, b) => a + b, 0) / turbVals.length).toFixed(2)} ЕМФ`;
-            }
             if (data.length > 0) {
                 document.getElementById('statLastPoint').innerText = `${data[0].point} (${data[0].time_slot})`;
             }
@@ -307,7 +288,6 @@
                 }
             });
 
-            // Расчет и отрисовка мин/макс/среднего под графиком
             renderChartStats(canvasId, datasetList, chlorineData, turbidityData);
         }
 
@@ -343,22 +323,23 @@
             // 1. Исходная вода
             renderDualChart('chartRaw', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая']));
 
-            // 2. После СМ — БВО-1 и БВО-2
+            // 2-3. После СМ — БВО-1 и БВО-2
             renderDualChart('chartSmBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-1'));
             renderDualChart('chartSmBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-2'));
 
-            // 3. Фильтры — БВО-1 и БВО-2
+            // 4-5. Фильтры — БВО-1 и БВО-2
             renderDualChart('chartFiltersBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-1'));
             renderDualChart('chartFiltersBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-2'));
 
-            // 4. КФВ — БВО-1 и БВО-2
+            // 6-7. КФВ — БВО-1 и БВО-2
             renderDualChart('chartKfvBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-1'));
             renderDualChart('chartKfvBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-2'));
 
-            // 5. Общий коллектор
-            renderDualChart('chartCollector', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ']));
+            // 8-9. Коллектор — БВО-1 и БВО-2
+            renderDualChart('chartCollectorBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-1'));
+            renderDualChart('chartCollectorBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-2'));
 
-            // 6. Насосы
+            // 10. Насосы
             renderDualChart('chartPumps', ['chlorine', 'turbidity'], filterPoints(data, ['насос', 'нс']));
         }
 
