@@ -142,8 +142,8 @@
 <body>
 
     <div class="header">
-        <h1>Данные анализов</h1>
-        <p>Введите показания параметров</p>
+        <h1 id="page-title">Данные анализов</h1>
+        <p id="page-subtitle">Введите показания параметров</p>
     </div>
 
     <div id="table"></div>
@@ -155,6 +155,14 @@
             tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
             tg.MainButton.onClick(() => sendData());
         }
+
+        // Получаем параметры блока и времени из URL (переданные из bot.py)
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentBlock = urlParams.get('block') || 'БВО-1';
+        const currentTime = urlParams.get('time') || '09:00';
+
+        // Обновляем подзаголовок, чтобы лаборант видел, куда вводит данные
+        document.getElementById('page-subtitle').innerText = `Блок: ${currentBlock} | Время: ${currentTime}`;
 
         const groups = [
             {
@@ -191,8 +199,12 @@
                 const index = globalIndex++;
                 allPoints.push(pt);
 
-                const savedCl = localStorage.getItem(`cl_${pt}`) || '';
-                const savedTurb = localStorage.getItem(`turb_${pt}`) || '';
+                // Уникальные ключи сохранения: Блок_Время_Параметр_Точка
+                const keyCl = `${currentBlock}_${currentTime}_cl_${pt}`;
+                const keyTurb = `${currentBlock}_${currentTime}_turb_${pt}`;
+
+                const savedCl = localStorage.getItem(keyCl) || '';
+                const savedTurb = localStorage.getItem(keyTurb) || '';
 
                 const row = document.createElement('div');
                 row.className = 'row';
@@ -235,8 +247,9 @@
             const row = document.getElementById(`row_${index}`);
 
             if (ptName) {
-                localStorage.setItem(`cl_${ptName}`, cl);
-                localStorage.setItem(`turb_${ptName}`, turb);
+                // Сохраняем в localStorage с разделением по блоку и времени
+                localStorage.setItem(`${currentBlock}_${currentTime}_cl_${ptName}`, cl);
+                localStorage.setItem(`${currentBlock}_${currentTime}_turb_${ptName}`, turb);
             }
 
             if (cl || turb) {
@@ -260,20 +273,16 @@
             }
         }
 
-        // 1. Проверка хлора: обязательно 2 цифры после точки/запятой, ведущий ноль и ЧЁТНОЕ последнее число
+        // 1. Проверка хлора: обязательно 2 цифры после точки/запятой и ЧЁТНОЕ последнее число
         function validateChlorine(val) {
             if (!val) return { valid: true };
             
-            // Нормализация (замена запятой на точку)
             const str = val.replace(',', '.');
-
-            // Регулярное выражение: целое число (с нулем) + точка + ровно 2 цифры
             const regex = /^(0|[1-9]\d*)\.\d{2}$/;
             if (!regex.test(str)) {
                 return { valid: false, reason: "формат должен быть с двумя знаками (например: 0.22 или 1.98)" };
             }
 
-            // Проверка на четность последнего знака
             const lastDigit = parseInt(str.slice(-1), 10);
             if (lastDigit % 2 !== 0) {
                 return { valid: false, reason: "значение хлора должно быть чётным (например: 0.22 вместо 0.21)" };
@@ -282,13 +291,11 @@
             return { valid: true };
         }
 
-        // 2. Проверка мутности: обязательно 1 цифра после точки/запятой и ведущий ноль
+        // 2. Проверка мутности: обязательно 1 цифра после точки/запятой
         function validateTurbidity(val) {
             if (!val) return { valid: true };
 
             const str = val.replace(',', '.');
-
-            // Регулярное выражение: целое число (с нулем) + точка + ровно 1 цифра
             const regex = /^(0|[1-9]\d*)\.\d{1}$/;
             if (!regex.test(str)) {
                 return { valid: false, reason: "формат должен быть с одним знаком после точки (например: 2.1, 0.9, 11.8)" };
@@ -310,14 +317,12 @@
 
                 if (clRaw === "" && turbRaw === "") continue;
 
-                // Проверка хлора
                 const clCheck = validateChlorine(clRaw);
                 if (!clCheck.valid) {
                     showAlert(`Ошибка в "${pt}" (Хлор "${clRaw}"): ${clCheck.reason}.`);
                     return;
                 }
 
-                // Проверка мутности
                 const turbCheck = validateTurbidity(turbRaw);
                 if (!turbCheck.valid) {
                     showAlert(`Ошибка в "${pt}" (Мутность "${turbRaw}"): ${turbCheck.reason}.`);
@@ -335,6 +340,12 @@
                 showAlert("Заполните хотя бы одно поле перед отправкой!");
                 return;
             }
+
+            // Очищаем локальную память текущего блока/времени после отправки
+            allPoints.forEach(pt => {
+                localStorage.removeItem(`${currentBlock}_${currentTime}_cl_${pt}`);
+                localStorage.removeItem(`${currentBlock}_${currentTime}_turb_${pt}`);
+            });
 
             if (tg) {
                 tg.sendData(JSON.stringify(result));
