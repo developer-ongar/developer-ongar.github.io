@@ -213,7 +213,6 @@
             container.appendChild(groupCard);
         });
 
-        // Первичная инициализация состояния
         allPoints.forEach((pt, index) => {
             checkState(index, pt);
         });
@@ -261,11 +260,41 @@
             }
         }
 
-        // Валидатор: требует наличие ведущего нуля для дробей (.22 -> ошибка, 0.22 -> ОК)
-        function isValidNumberFormat(val) {
-            if (!val) return true;
-            const formatRegex = /^(0|[1-9]\d*)([.,]\d+)?$/;
-            return formatRegex.test(val);
+        // 1. Проверка хлора: обязательно 2 цифры после точки/запятой, ведущий ноль и ЧЁТНОЕ последнее число
+        function validateChlorine(val) {
+            if (!val) return { valid: true };
+            
+            // Нормализация (замена запятой на точку)
+            const str = val.replace(',', '.');
+
+            // Регулярное выражение: целое число (с нулем) + точка + ровно 2 цифры
+            const regex = /^(0|[1-9]\d*)\.\d{2}$/;
+            if (!regex.test(str)) {
+                return { valid: false, reason: "формат должен быть с двумя знаками (например: 0.22 или 1.98)" };
+            }
+
+            // Проверка на четность последнего знака
+            const lastDigit = parseInt(str.slice(-1), 10);
+            if (lastDigit % 2 !== 0) {
+                return { valid: false, reason: "значение хлора должно быть чётным (например: 0.22 вместо 0.21)" };
+            }
+
+            return { valid: true };
+        }
+
+        // 2. Проверка мутности: обязательно 1 цифра после точки/запятой и ведущий ноль
+        function validateTurbidity(val) {
+            if (!val) return { valid: true };
+
+            const str = val.replace(',', '.');
+
+            // Регулярное выражение: целое число (с нулем) + точка + ровно 1 цифра
+            const regex = /^(0|[1-9]\d*)\.\d{1}$/;
+            if (!regex.test(str)) {
+                return { valid: false, reason: "формат должен быть с одним знаком после точки (например: 2.1, 0.9, 11.8)" };
+            }
+
+            return { valid: true };
         }
 
         function sendData() {
@@ -281,24 +310,18 @@
 
                 if (clRaw === "" && turbRaw === "") continue;
 
-                // 1. Проверка формата Хлора
-                if (!isValidNumberFormat(clRaw)) {
-                    showAlert(`Ошибка в "${pt}" (Хлор): значение "${clRaw}" неверное. Укажите ноль перед точкой (например: 0.22).`);
-                    return; // Полная остановка выполнения
+                // Проверка хлора
+                const clCheck = validateChlorine(clRaw);
+                if (!clCheck.valid) {
+                    showAlert(`Ошибка в "${pt}" (Хлор "${clRaw}"): ${clCheck.reason}.`);
+                    return;
                 }
 
-                // 2. Проверка формата Мутности
-                if (!isValidNumberFormat(turbRaw)) {
-                    showAlert(`Ошибка в "${pt}" (Мутность): значение "${turbRaw}" неверное. Укажите ноль перед точкой (например: 0.5).`);
-                    return; // Полная остановка выполнения
-                }
-
-                const turbVal = turbRaw !== "" ? parseFloat(turbRaw.replace(',', '.')) : null;
-
-                // 3. Проверка критической мутности (> 2.0)
-                if (turbVal !== null && turbVal > 2.0) {
-                    showAlert(`Предупреждение в "${pt}": мутность (${turbVal}) превышает 2.0!`);
-                    return; // Полная остановка выполнения
+                // Проверка мутности
+                const turbCheck = validateTurbidity(turbRaw);
+                if (!turbCheck.valid) {
+                    showAlert(`Ошибка в "${pt}" (Мутность "${turbRaw}"): ${turbCheck.reason}.`);
+                    return;
                 }
 
                 result.push({
