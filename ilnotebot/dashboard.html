@@ -189,12 +189,13 @@
             });
         }
 
-        function getMetricStats(arr) {
+        // Параметр decimals указывает количество знаков после запятой (по умолчанию 2)
+        function getMetricStats(arr, decimals = 2) {
             const valid = arr.filter(v => v !== null && !isNaN(v));
             if (valid.length === 0) return { min: '—', max: '—', avg: '—' };
-            const min = Math.min(...valid).toFixed(2);
-            const max = Math.max(...valid).toFixed(2);
-            const avg = (valid.reduce((a, b) => a + b, 0) / valid.length).toFixed(2);
+            const min = Math.min(...valid).toFixed(decimals);
+            const max = Math.max(...valid).toFixed(decimals);
+            const avg = (valid.reduce((a, b) => a + b, 0) / valid.length).toFixed(decimals);
             return { min, max, avg };
         }
 
@@ -307,7 +308,7 @@
             let html = `<div class="mt-3 pt-2 border-t border-slate-700/80 text-xs grid grid-cols-1 gap-1 text-slate-300">`;
 
             if (datasetList.includes('chlorine')) {
-                const cl = getMetricStats(clArray);
+                const cl = getMetricStats(clArray, 2); // Хлор с 2 знаками
                 html += `
                     <div class="flex justify-between items-center bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50">
                         <span class="text-emerald-400 font-semibold">💧 Хлор:</span>
@@ -316,7 +317,7 @@
             }
 
             if (datasetList.includes('turbidity')) {
-                const turb = getMetricStats(turbArray);
+                const turb = getMetricStats(turbArray, 1); // Мутность ровно с 1 знаком после запятой
                 html += `
                     <div class="flex justify-between items-center bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50">
                         <span class="text-amber-400 font-semibold">🌪️ Мутность:</span>
