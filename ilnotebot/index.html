@@ -167,18 +167,26 @@
         const currentTime = urlParams.get('time') || '09:00';
 
         const isFullAnalysisTime = currentTime === '09:00' || currentTime === '21:00';
+        const isBvo1 = currentBlock.toUpperCase().includes('БВО-1');
 
         document.getElementById('page-subtitle').innerText = `Блок: ${currentBlock} | Время: ${currentTime}`;
 
         // Динамический генератор списка фильтров
-        const filterCount = currentBlock.toUpperCase().includes('БВО-1') ? 8 : 12;
+        const filterCount = isBvo1 ? 8 : 12;
         const filterItems = Array.from({ length: filterCount }, (_, i) => `Фильтр ${i + 1}`);
 
-        const groups = [
-            {
+        // Формирование списка групп в зависимости от блока
+        const groups = [];
+
+        // Группа "Насосы" добавляется только для БВО-1
+        if (isBvo1) {
+            groups.push({
                 title: "Насосы",
                 items: ["Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6"]
-            },
+            });
+        }
+
+        groups.push(
             {
                 title: "Управление и коллекторы",
                 items: ["УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя", "Исх. вода", "Оборотная вода"]
@@ -187,7 +195,7 @@
                 title: "Фильтры",
                 items: filterItems
             }
-        ];
+        );
 
         const container = document.getElementById('table');
         let globalIndex = 0;
