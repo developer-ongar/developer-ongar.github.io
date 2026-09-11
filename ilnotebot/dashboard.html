@@ -29,9 +29,9 @@
     <!-- Настройка API сервера -->
     <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mb-6 flex flex-col sm:flex-row items-center gap-3">
         <label for="apiUrl" class="text-xs text-slate-400 whitespace-nowrap">URL REST API сервера:</label>
-        <input type="text" id="apiUrl" value="http://localhost:8080/api/data" 
+        <input type="text" id="apiUrl" value="https://ilnote-bot-production.up.railway.app/api/data" 
                class="bg-slate-900 border border-slate-600 text-sm rounded-lg px-3 py-1.5 w-full text-blue-300 focus:outline-none focus:border-blue-500"
-               placeholder="ilnote-bot-production.up.railway.app">
+               placeholder="https://ilnote-bot-production.up.railway.app/api/data">
         <button onclick="loadData()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-500">
             Сохранить
         </button>
@@ -104,7 +104,6 @@
     </div>
 
     <script>
-        // Инициализация Telegram WebApp API
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
@@ -113,7 +112,6 @@
         let chartClInstance = null;
         let chartTurbInstance = null;
 
-        // Преобразование строковых значений в числа
         function parseNum(val) {
             if (!val || val === '—' || val === '-') return null;
             const n = parseFloat(String(val).replace(',', '.'));
@@ -167,18 +165,15 @@
         }
 
         function renderCharts(rawData) {
-            // Берем последние 30 записей и разворачиваем в хронологическом порядке
             const data = [...rawData].slice(0, 30).reverse();
 
             const labels = data.map(d => `${d.time_slot} (${d.point})`);
             const chlorineData = data.map(d => parseNum(d.chlorine));
             const turbidityData = data.map(d => parseNum(d.turbidity));
 
-            // Сброс старых графиков
             if (chartClInstance) chartClInstance.destroy();
             if (chartTurbInstance) chartTurbInstance.destroy();
 
-            // 1. График Хлора
             const ctxCl = document.getElementById('chlorineChart').getContext('2d');
             chartClInstance = new Chart(ctxCl, {
                 type: 'line',
@@ -205,7 +200,6 @@
                 }
             });
 
-            // 2. График Мутности
             const ctxTurb = document.getElementById('turbidityChart').getContext('2d');
             chartTurbInstance = new Chart(ctxTurb, {
                 type: 'line',
@@ -250,10 +244,8 @@
             `).join('');
         }
 
-        // Автоматическая загрузка при старте
         window.addEventListener('DOMContentLoaded', () => {
             loadData();
-            // Автообновление каждые 30 секунд
             setInterval(loadData, 30000);
         });
     </script>
