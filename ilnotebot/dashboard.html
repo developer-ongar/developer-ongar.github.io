@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дашборд аналитики НФС-3 по точкам</title>
+    <title>Дашборд аналитики НФС-3</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -16,15 +16,15 @@
     <!-- Шапка -->
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-slate-700 gap-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-blue-400">📊 Раздельный мониторинг точек ИЛ НФС-3</h1>
-            <p class="text-xs sm:text-sm text-slate-400">Графики хлора и мутности по технологическим этапам очистки</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-blue-400">📊 Мониторинг показателей ИЛ НФС-3</h1>
+            <p class="text-xs sm:text-sm text-slate-400">Строгое разделение графиков по блокам и технологическим точкам</p>
         </div>
         <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow flex items-center gap-2">
             🔄 Обновить
         </button>
     </header>
 
-    <!-- Настройка API сервера -->
+    <!-- Настройка API -->
     <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mb-6 flex flex-col sm:flex-row items-center gap-3">
         <label for="apiUrl" class="text-xs text-slate-400 whitespace-nowrap">URL REST API:</label>
         <input type="text" id="apiUrl" value="https://ilnote-bot-production.up.railway.app/api/data" 
@@ -59,52 +59,44 @@
         
         <!-- 1. Исходная вода -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="text-base font-semibold mb-3 text-cyan-400 flex items-center gap-2">
-                🌊 1. Исходная вода (Мутность)
-            </h2>
-            <div class="relative h-56">
-                <canvas id="chartRaw"></canvas>
-            </div>
+            <h2 class="text-base font-semibold mb-3 text-cyan-400">🌊 1. Исходная вода (Мутность)</h2>
+            <div class="relative h-56"><canvas id="chartRaw"></canvas></div>
         </div>
 
         <!-- 2. После СМ -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="text-base font-semibold mb-3 text-emerald-400 flex items-center gap-2">
-                🧪 2. После СМ (Смесители)
-            </h2>
-            <div class="relative h-56">
-                <canvas id="chartSm"></canvas>
-            </div>
+            <h2 class="text-base font-semibold mb-3 text-emerald-400">🧪 2. После СМ (Смесители)</h2>
+            <div class="relative h-56"><canvas id="chartSm"></canvas></div>
         </div>
 
-        <!-- 3. Фильтра и КФВ -->
+        <!-- 3. Фильтры БВО-1 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="text-base font-semibold mb-3 text-indigo-400 flex items-center gap-2">
-                🧹 3. Фильтра и КФВ
-            </h2>
-            <div class="relative h-56">
-                <canvas id="chartFilters"></canvas>
-            </div>
+            <h2 class="text-base font-semibold mb-3 text-blue-400">🧹 3. Фильтры — БВО-1</h2>
+            <div class="relative h-56"><canvas id="chartFiltersBvo1"></canvas></div>
         </div>
 
-        <!-- 4. Общий коллектор -->
+        <!-- 4. Фильтры БВО-2 -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="text-base font-semibold mb-3 text-purple-400 flex items-center gap-2">
-                🔀 4. Общий коллектор
-            </h2>
-            <div class="relative h-56">
-                <canvas id="chartCollector"></canvas>
-            </div>
+            <h2 class="text-base font-semibold mb-3 text-purple-400">🧹 4. Фильтры — БВО-2</h2>
+            <div class="relative h-56"><canvas id="chartFiltersBvo2"></canvas></div>
         </div>
 
-        <!-- 5. Насосная станция -->
+        <!-- 5. КФВ -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h2 class="text-base font-semibold mb-3 text-teal-400">💧 5. КФВ (Контактные осветлители)</h2>
+            <div class="relative h-56"><canvas id="chartKfv"></canvas></div>
+        </div>
+
+        <!-- 6. Общий коллектор -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h2 class="text-base font-semibold mb-3 text-pink-400">🔀 6. Общий коллектор</h2>
+            <div class="relative h-56"><canvas id="chartCollector"></canvas></div>
+        </div>
+
+        <!-- 7. Насосы / Насосная станция -->
         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 lg:col-span-2">
-            <h2 class="text-base font-semibold mb-3 text-amber-400 flex items-center gap-2">
-                🚰 5. Насосная станция / Насосы
-            </h2>
-            <div class="relative h-60">
-                <canvas id="chartPumps"></canvas>
-            </div>
+            <h2 class="text-base font-semibold mb-3 text-amber-400">🚰 7. Насосная станция (Насосы)</h2>
+            <div class="relative h-60"><canvas id="chartPumps"></canvas></div>
         </div>
 
     </div>
@@ -128,9 +120,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody" class="divide-y divide-slate-700/50">
-                    <tr>
-                        <td colspan="7" class="p-4 text-center text-slate-500">Загрузка данных...</td>
-                    </tr>
+                    <tr><td colspan="7" class="p-4 text-center text-slate-500">Загрузка данных...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -150,8 +140,10 @@
             return isNaN(n) ? null : n;
         }
 
-        function filterByKeywords(data, keywords) {
+        // Фильтрация без fallback (возвращает только точные совпадения)
+        function filterPoints(data, keywords, targetBlock = null) {
             return data.filter(d => {
+                if (targetBlock && d.block !== targetBlock) return false;
                 if (!d.point) return false;
                 const p = d.point.toLowerCase();
                 return keywords.some(kw => p.includes(kw.toLowerCase()));
@@ -200,22 +192,21 @@
             }
         }
 
-        function renderDualChart(canvasId, datasetList, rawItems) {
-            const items = [...rawItems].slice(0, 20).reverse();
-            const labels = items.map(d => `${d.time_slot} (${d.point})`);
+        function renderDualChart(canvasId, datasetList, items) {
+            const chartData = [...items].slice(0, 20).reverse();
+            const labels = chartData.map(d => `${d.time_slot} (${d.point})`);
 
             if (chartInstances[canvasId]) {
                 chartInstances[canvasId].destroy();
             }
 
             const ctx = document.getElementById(canvasId).getContext('2d');
-            
             const datasets = [];
             
             if (datasetList.includes('chlorine')) {
                 datasets.push({
                     label: 'Хлор (мг/л)',
-                    data: items.map(d => parseNum(d.chlorine)),
+                    data: chartData.map(d => parseNum(d.chlorine)),
                     borderColor: '#10b981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
                     yAxisID: 'yCl',
@@ -227,7 +218,7 @@
             if (datasetList.includes('turbidity')) {
                 datasets.push({
                     label: 'Мутность (ЕМФ)',
-                    data: items.map(d => parseNum(d.turbidity)),
+                    data: chartData.map(d => parseNum(d.turbidity)),
                     borderColor: '#f59e0b',
                     backgroundColor: 'rgba(245, 158, 11, 0.1)',
                     yAxisID: 'yTurb',
@@ -250,16 +241,14 @@
                             display: datasetList.includes('chlorine'),
                             position: 'left',
                             ticks: { color: '#10b981', font: { size: 10 } },
-                            grid: { color: '#334155' },
-                            title: { display: true, text: 'Cl', color: '#10b981' }
+                            grid: { color: '#334155' }
                         },
                         yTurb: {
                             type: 'linear',
                             display: datasetList.includes('turbidity'),
                             position: 'right',
                             ticks: { color: '#f59e0b', font: { size: 10 } },
-                            grid: { drawOnChartArea: false },
-                            title: { display: true, text: 'ЕМФ', color: '#f59e0b' }
+                            grid: { drawOnChartArea: false }
                         }
                     },
                     plugins: {
@@ -271,24 +260,25 @@
 
         function renderAllCharts(data) {
             // 1. Исходная вода (только мутность)
-            const rawData = filterByKeywords(data, ['исход', 'исх']);
-            renderDualChart('chartRaw', ['turbidity'], rawData.length ? rawData : data);
+            renderDualChart('chartRaw', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая']));
 
-            // 2. После СМ (Хлор и Мутность)
-            const smData = filterByKeywords(data, ['см', 'смесител']);
-            renderDualChart('chartSm', ['chlorine', 'turbidity'], smData.length ? smData : data);
+            // 2. После СМ
+            renderDualChart('chartSm', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител']));
 
-            // 3. Фильтра и КФВ (Хлор и Мутность)
-            const filterData = filterByKeywords(data, ['фильтр', 'кфв']);
-            renderDualChart('chartFilters', ['chlorine', 'turbidity'], filterData.length ? filterData : data);
+            // 3. Фильтры БВО-1
+            renderDualChart('chartFiltersBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-1'));
 
-            // 4. Общий коллектор (Хлор и Мутность)
-            const collectorData = filterByKeywords(data, ['коллектор', 'общ']);
-            renderDualChart('chartCollector', ['chlorine', 'turbidity'], collectorData.length ? collectorData : data);
+            // 4. Фильтры БВО-2
+            renderDualChart('chartFiltersBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-2'));
 
-            // 5. Насосная станция (Хлор и Мутность)
-            const pumpData = filterByKeywords(data, ['насос', 'нс']);
-            renderDualChart('chartPumps', ['chlorine', 'turbidity'], pumpData.length ? pumpData : data);
+            // 5. КФВ
+            renderDualChart('chartKfv', ['chlorine', 'turbidity'], filterPoints(data, ['кфв']));
+
+            // 6. Общий коллектор
+            renderDualChart('chartCollector', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ']));
+
+            // 7. Насосы / Насосная станция
+            renderDualChart('chartPumps', ['chlorine', 'turbidity'], filterPoints(data, ['насос', 'нс']));
         }
 
         function renderTable(data) {
