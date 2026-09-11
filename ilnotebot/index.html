@@ -1,274 +1,248 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ввод анализов</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg: var(--tg-theme-secondary-bg-color, #f0f0f2);
-            --card-bg: var(--tg-theme-bg-color, #ffffff);
-            --text: var(--tg-theme-text-color, #000000);
-            --hint: var(--tg-theme-hint-color, #8e8e93);
-            --accent: var(--tg-theme-button-color, #2481cc);
-            --border: rgba(60, 60, 67, 0.12);
-            --dot-active: #34c759;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ввод анализов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: var(--tg-theme-secondary-bg-color, #f0f0f2);
+            --card-bg: var(--tg-theme-bg-color, #ffffff);
+            --text: var(--tg-theme-text-color, #000000);
+            --hint: var(--tg-theme-hint-color, #8e8e93);
+            --accent: var(--tg-theme-button-color, #2481cc);
+            --border: rgba(60, 60, 67, 0.12);
+            --dot-active: #34c759;
+        }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 16px 12px 32px 12px;
-        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px 12px 32px 12px;
+        }
 
-        .header {
-            margin: 0 0 16px 8px;
-        }
+        .header {
+            margin: 0 0 16px 8px;
+        }
 
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0 0 2px 0;
-            letter-spacing: -0.4px;
-        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 2px 0;
+            letter-spacing: -0.4px;
+        }
 
-        .header p {
-            font-size: 13px;
-            color: var(--hint);
-            margin: 0;
-        }
+        .header p {
+            font-size: 13px;
+            color: var(--hint);
+            margin: 0;
+        }
 
-        .section-header {
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            color: var(--hint);
-            margin: 18px 0 6px 12px;
-            letter-spacing: 0.2px;
-        }
+        .section-header {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: var(--hint);
+            margin: 18px 0 6px 12px;
+            letter-spacing: 0.2px;
+        }
 
-        .group-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0.5px 1px rgba(0,0,0,0.04);
-        }
+        .group-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0.5px 1px rgba(0,0,0,0.04);
+        }
 
-        .row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 9px 12px;
-            position: relative;
-        }
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            position: relative;
+        }
 
-        .row:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            left: 12px;
-            height: 0.5px;
-            background: var(--border);
-        }
+        .row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 12px;
+            height: 0.5px;
+            background: var(--border);
+        }
 
-        .label-wrap {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            width: 45%;
-        }
+        .label-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 45%;
+        }
 
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: transparent;
-            transition: background 0.2s ease;
-        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: transparent;
+            transition: background 0.2s ease;
+        }
 
-        .row.filled .status-dot {
-            background: var(--dot-active);
-        }
+        .row.filled .status-dot {
+            background: var(--dot-active);
+        }
 
-        .label {
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .label {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-        .inputs {
-            display: flex;
-            gap: 6px;
-            width: 52%;
-        }
+        .inputs {
+            display: flex;
+            gap: 6px;
+            width: 52%;
+        }
 
-        input {
-            width: 100%;
-            padding: 6px 4px;
-            background: var(--bg);
-            color: var(--text);
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            outline: none;
-            transition: background 0.2s;
-        }
+        input {
+            width: 100%;
+            padding: 6px 4px;
+            background: var(--bg);
+            color: var(--text);
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            outline: none;
+            transition: background 0.2s;
+        }
 
-        input:focus {
-            background: rgba(36, 129, 204, 0.1);
-        }
+        input:focus {
+            background: rgba(36, 129, 204, 0.1);
+        }
 
-        input::placeholder {
-            color: var(--hint);
-            font-weight: 400;
-            font-size: 12px;
-            opacity: 0.6;
-        }
-    </style>
+        input::placeholder {
+            color: var(--hint);
+            font-weight: 400;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Данные анализов</h1>
-        <p>Введите показания параметров</p>
-    </div>
+    <div class="header">
+        <h1>Данные анализов</h1>
+        <p>Введите показания параметров</p>
+    </div>
 
-    <div id="table"></div>
+    <div id="table"></div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-        tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
-        tg.MainButton.onClick(() => sendData());
+        // Настройка родной кнопки Telegram MainButton
+        tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
+        tg.MainButton.onClick(() => sendData());
 
-        const groups = [
-            {
-                title: "Насосы",
-                items: ["Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6"]
-            },
-            {
-                title: "Управление и коллекторы",
-                items: ["УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя", "Исх. вода", "Оборотная вода"]
-            },
-            {
-                title: "Фильтры",
-                items: [
-                    "Фильтр 1", "Фильтр 2", "Фильтр 3", "Фильтр 4", "Фильтр 5", "Фильтр 6",
-                    "Фильтр 7", "Фильтр 8", "Фильтр 9", "Фильтр 10", "Фильтр 11", "Фильтр 12"
-                ]
-            }
-        ];
+        const groups = [
+            {
+                title: "Насосы",
+                items: ["Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6"]
+            },
+            {
+                title: "Управление и коллекторы",
+                items: ["УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя", "Исх. вода", "Оборотная вода"]
+            },
+            {
+                title: "Фильтры",
+                items: [
+                    "Фильтр 1", "Фильтр 2", "Фильтр 3", "Фильтр 4", "Фильтр 5", "Фильтр 6",
+                    "Фильтр 7", "Фильтр 8", "Фильтр 9", "Фильтр 10", "Фильтр 11", "Фильтр 12"
+                ]
+            }
+        ];
 
-        const container = document.getElementById('table');
-        let globalIndex = 0;
-        const allPoints = [];
+        const container = document.getElementById('table');
+        let globalIndex = 0;
+        const allPoints = [];
 
-        groups.forEach(group => {
-            const groupHeader = document.createElement('div');
-            groupHeader.className = 'section-header';
-            groupHeader.innerText = group.title;
-            container.appendChild(groupHeader);
+        groups.forEach(group => {
+            const groupHeader = document.createElement('div');
+            groupHeader.className = 'section-header';
+            groupHeader.innerText = group.title;
+            container.appendChild(groupHeader);
 
-            const groupCard = document.createElement('div');
-            groupCard.className = 'group-card';
+            const groupCard = document.createElement('div');
+            groupCard.className = 'group-card';
 
-            group.items.forEach(pt => {
-                const index = globalIndex++;
-                allPoints.push(pt);
+            group.items.forEach(pt => {
+                const index = globalIndex++;
+                allPoints.push(pt);
 
-                // Подгружаем сохраненные значения из localStorage
-                const savedCl = localStorage.getItem(`cl_${index}`) || '';
-                const savedTurb = localStorage.getItem(`turb_${index}`) || '';
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.id = `row_${index}`;
+                row.innerHTML = `
+                    <div class="label-wrap">
+                        <div class="status-dot"></div>
+                        <div class="label">${pt}</div>
+                    </div>
+                    <div class="inputs">
+                        <input type="text" inputmode="decimal" id="cl_${index}" placeholder="Cl" oninput="checkState(${index})">
+                        <input type="text" inputmode="decimal" id="turb_${index}" placeholder="Turb" oninput="checkState(${index})">
+                    </div>
+                `;
+                groupCard.appendChild(row);
+            });
 
-                const row = document.createElement('div');
-                row.className = 'row';
-                row.id = `row_${index}`;
-                row.innerHTML = `
-                    <div class="label-wrap">
-                        <div class="status-dot"></div>
-                        <div class="label">${pt}</div>
-                    </div>
-                    <div class="inputs">
-                        <input type="text" inputmode="decimal" id="cl_${index}" value="${savedCl}" placeholder="Cl" oninput="checkState(${index})">
-                        <input type="text" inputmode="decimal" id="turb_${index}" value="${savedTurb}" placeholder="Turb" oninput="checkState(${index})">
-                    </div>
-                `;
-                groupCard.appendChild(row);
-            });
+            container.appendChild(groupCard);
+        });
 
-            container.appendChild(groupCard);
-        });
+        function checkState(index) {
+            const cl = document.getElementById(`cl_${index}`).value.trim();
+            const turb = document.getElementById(`turb_${index}`).value.trim();
+            const row = document.getElementById(`row_${index}`);
 
-        // Проверяем состояние при загрузке страницы для восстановления подсветок и MainButton
-        allPoints.forEach((_, i) => checkState(i, false));
+            if (cl || turb) {
+                row.classList.add('filled');
+            } else {
+                row.classList.remove('filled');
+            }
 
-        function checkState(index, isInputEvent = true) {
-            const clInput = document.getElementById(`cl_${index}`);
-            const turbInput = document.getElementById(`turb_${index}`);
-            
-            const cl = clInput.value.trim();
-            const turb = turbInput.value.trim();
-            const row = document.getElementById(`row_${index}`);
+            // Показываем кнопку MainButton если заполнен хотя бы один элемент
+            const hasData = allPoints.some((_, i) => {
+                return document.getElementById(`cl_${i}`).value.trim() !== "" || 
+                       document.getElementById(`turb_${i}`).value.trim() !== "";
+            });
 
-            if (isInputEvent) {
-                // Сохраняем в кэш браузера только при реальном вводе
-                localStorage.setItem(`cl_${index}`, cl);
-                localStorage.setItem(`turb_${index}`, turb);
-            }
+            if (hasData) {
+                tg.MainButton.show();
+            } else {
+                tg.MainButton.hide();
+            }
+        }
 
-            if (cl || turb) {
-                row.classList.add('filled');
-            } else {
-                row.classList.remove('filled');
-            }
+        function sendData() {
+            const result = allPoints.map((pt, index) => {
+                const cl = document.getElementById(`cl_${index}`).value.trim() || "—";
+                const turb = document.getElementById(`turb_${index}`).value.trim() || "—";
+                return { point: pt, chlorine: cl, turbidity: turb };
+            });
 
-            const hasData = allPoints.some((_, i) => {
-                return document.getElementById(`cl_${i}`).value.trim() !== "" || 
-                       document.getElementById(`turb_${i}`).value.trim() !== "";
-            });
-
-            if (hasData) {
-                tg.MainButton.show();
-            } else {
-                tg.MainButton.hide();
-            }
-        }
-
-        function sendData() {
-            const result = [];
-
-            allPoints.forEach((pt, index) => {
-                const cl = document.getElementById(`cl_${index}`).value.trim();
-                const turb = document.getElementById(`turb_${index}`).value.trim();
-
-                // Отправляем ТОЛЬКО те точки, где заполнен хотя бы один параметр
-                if (cl !== "" || turb !== "") {
-                    result.push({
-                        point: pt,
-                        chlorine: cl !== "" ? cl : "—",
-                        turbidity: turb !== "" ? turb : "—"
-                    });
-                }
-            });
-
-            if (result.length > 0) {
-                tg.sendData(JSON.stringify(result));
-            }
-        }
-    </script>
+            tg.sendData(JSON.stringify(result));
+        }
+    </script>
 </body>
 </html>
