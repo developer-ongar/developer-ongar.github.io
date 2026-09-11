@@ -152,7 +152,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Настройка родной кнопки Telegram MainButton
         tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
         tg.MainButton.onClick(() => sendData());
 
@@ -191,6 +190,10 @@
                 const index = globalIndex++;
                 allPoints.push(pt);
 
+                // Подгружаем сохраненные значения из localStorage
+                const savedCl = localStorage.getItem(`cl_${index}`) || '';
+                const savedTurb = localStorage.getItem(`turb_${index}`) || '';
+
                 const row = document.createElement('div');
                 row.className = 'row';
                 row.id = `row_${index}`;
@@ -200,8 +203,8 @@
                         <div class="label">${pt}</div>
                     </div>
                     <div class="inputs">
-                        <input type="text" inputmode="decimal" id="cl_${index}" placeholder="Cl" oninput="checkState(${index})">
-                        <input type="text" inputmode="decimal" id="turb_${index}" placeholder="Turb" oninput="checkState(${index})">
+                        <input type="text" inputmode="decimal" id="cl_${index}" value="${savedCl}" placeholder="Cl" oninput="checkState(${index})">
+                        <input type="text" inputmode="decimal" id="turb_${index}" value="${savedTurb}" placeholder="Turb" oninput="checkState(${index})">
                     </div>
                 `;
                 groupCard.appendChild(row);
@@ -210,10 +213,22 @@
             container.appendChild(groupCard);
         });
 
-        function checkState(index) {
-            const cl = document.getElementById(`cl_${index}`).value.trim();
-            const turb = document.getElementById(`turb_${index}`).value.trim();
+        // Проверяем состояние при загрузке страницы для восстановления подсветок и MainButton
+        allPoints.forEach((_, i) => checkState(i, false));
+
+        function checkState(index, isInputEvent = true) {
+            const clInput = document.getElementById(`cl_${index}`);
+            const turbInput = document.getElementById(`turb_${index}`);
+            
+            const cl = clInput.value.trim();
+            const turb = turbInput.value.trim();
             const row = document.getElementById(`row_${index}`);
+
+            if (isInputEvent) {
+                // Сохраняем в кэш браузера только при реальном вводе
+                localStorage.setItem(`cl_${index}`, cl);
+                localStorage.setItem(`turb_${index}`, turb);
+            }
 
             if (cl || turb) {
                 row.classList.add('filled');
@@ -221,7 +236,6 @@
                 row.classList.remove('filled');
             }
 
-            // Показываем кнопку MainButton если заполнен хотя бы один элемент
             const hasData = allPoints.some((_, i) => {
                 return document.getElementById(`cl_${i}`).value.trim() !== "" || 
                        document.getElementById(`turb_${i}`).value.trim() !== "";
@@ -235,13 +249,25 @@
         }
 
         function sendData() {
-            const result = allPoints.map((pt, index) => {
-                const cl = document.getElementById(`cl_${index}`).value.trim() || "—";
-                const turb = document.getElementById(`turb_${index}`).value.trim() || "—";
-                return { point: pt, chlorine: cl, turbidity: turb };
+            const result = [];
+
+            allPoints.forEach((pt, index) => {
+                const cl = document.getElementById(`cl_${index}`).value.trim();
+                const turb = document.getElementById(`turb_${index}`).value.trim();
+
+                // Отправляем ТОЛЬКО те точки, где заполнен хотя бы один параметр
+                if (cl !== "" || turb !== "") {
+                    result.push({
+                        point: pt,
+                        chlorine: cl !== "" ? cl : "—",
+                        turbidity: turb !== "" ? turb : "—"
+                    });
+                }
             });
 
-            tg.sendData(JSON.stringify(result));
+            if (result.length > 0) {
+                tg.sendData(JSON.stringify(result));
+            }
         }
     </script>
 </body>
