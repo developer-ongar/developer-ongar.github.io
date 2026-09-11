@@ -170,6 +170,10 @@
 
         document.getElementById('page-subtitle').innerText = `Блок: ${currentBlock} | Время: ${currentTime}`;
 
+        // Динамический генератор списка фильтров
+        const filterCount = currentBlock.toUpperCase().includes('БВО-1') ? 8 : 12;
+        const filterItems = Array.from({ length: filterCount }, (_, i) => `Фильтр ${i + 1}`);
+
         const groups = [
             {
                 title: "Насосы",
@@ -181,10 +185,7 @@
             },
             {
                 title: "Фильтры",
-                items: [
-                    "Фильтр 1", "Фильтр 2", "Фильтр 3", "Фильтр 4", "Фильтр 5", "Фильтр 6",
-                    "Фильтр 7", "Фильтр 8", "Фильтр 9", "Фильтр 10", "Фильтр 11", "Фильтр 12"
-                ]
+                items: filterItems
             }
         ];
 
@@ -192,13 +193,11 @@
         let globalIndex = 0;
         const allPoints = [];
 
-        // Функция проверки: нужно ли отображать вторичные поля для конкретной точки
         function hasSecondaryFields(ptName) {
             if (ptName.toLowerCase().startsWith('фильтр')) return false;
             return isFullAnalysisTime;
         }
 
-        // Возвращает список полей, с которыми работает конкретная точка
         function getActiveFieldsForPoint(ptName) {
             return hasSecondaryFields(ptName) 
                 ? ['cl', 'turb', 'ph', 'alk', 'al', 'ox'] 
