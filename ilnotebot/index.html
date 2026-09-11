@@ -115,6 +115,11 @@
             gap: 4px;
         }
 
+        /* Скрытие дополнительных полей вне 09:00 и 21:00 */
+        .inputs-secondary.hidden {
+            display: none !important;
+        }
+
         input {
             width: 100%;
             padding: 6px 4px;
@@ -161,6 +166,12 @@
         const urlParams = new URLSearchParams(window.location.search);
         const currentBlock = urlParams.get('block') || 'БВО-1';
         const currentTime = urlParams.get('time') || '09:00';
+
+        // Проверка: является ли текущее время полным анализом
+        const isFullAnalysisTime = currentTime === '09:00' || currentTime === '21:00';
+        const activeFields = isFullAnalysisTime 
+            ? ['cl', 'turb', 'ph', 'alk', 'al', 'ox'] 
+            : ['cl', 'turb'];
 
         document.getElementById('page-subtitle').innerText = `Блок: ${currentBlock} | Время: ${currentTime}`;
 
@@ -213,7 +224,7 @@
                         <input type="text" inputmode="decimal" id="cl_${index}" value="${getVal('cl')}" placeholder="Хлор (Cl)" oninput="checkState(${index}, '${pt}')">
                         <input type="text" inputmode="decimal" id="turb_${index}" value="${getVal('turb')}" placeholder="Мутность" oninput="checkState(${index}, '${pt}')">
                     </div>
-                    <div class="inputs-secondary">
+                    <div class="inputs-secondary ${isFullAnalysisTime ? '' : 'hidden'}">
                         <input type="text" inputmode="decimal" id="ph_${index}" value="${getVal('ph')}" placeholder="pH" oninput="checkState(${index}, '${pt}')">
                         <input type="text" inputmode="decimal" id="alk_${index}" value="${getVal('alk')}" placeholder="Щел." oninput="checkState(${index}, '${pt}')">
                         <input type="text" inputmode="decimal" id="al_${index}" value="${getVal('al')}" placeholder="Al" oninput="checkState(${index}, '${pt}')">
@@ -234,10 +245,10 @@
         }
 
         function checkState(index, ptName) {
-            const fields = ['cl', 'turb', 'ph', 'alk', 'al', 'ox'];
             const vals = {};
             
-            fields.forEach(f => {
+            // Сохраняем и проверяем только активные в данный час поля
+            activeFields.forEach(f => {
                 const el = document.getElementById(`${f}_${index}`);
                 vals[f] = el ? el.value.trim() : '';
                 if (ptName) localStorage.setItem(`${currentBlock}_${currentTime}_${f}_${ptName}`, vals[f]);
@@ -250,7 +261,7 @@
             else row.classList.remove('filled');
 
             const hasAnyData = allPoints.some((_, i) => 
-                fields.some(f => {
+                activeFields.some(f => {
                     const el = document.getElementById(`${f}_${i}`);
                     return el && el.value.trim() !== '';
                 })
@@ -288,7 +299,7 @@
 
         function sendData() {
             const result = [];
-            const fields = ['cl', 'turb', 'ph', 'alk', 'al', 'ox'];
+            const allStorageFields = ['cl', 'turb', 'ph', 'alk', 'al', 'ox'];
 
             for (let index = 0; index < allPoints.length; index++) {
                 const pt = allPoints[index];
@@ -299,7 +310,11 @@
                 const al = document.getElementById(`al_${index}`)?.value.trim() || '';
                 const ox = document.getElementById(`ox_${index}`)?.value.trim() || '';
 
-                if (!cl && !turb && !ph && !alk && !al && !ox) continue;
+                const hasRowData = isFullAnalysisTime 
+                    ? (cl || turb || ph || alk || al || ox) 
+                    : (cl || turb);
+
+                if (!hasRowData) continue;
 
                 const clCheck = validateChlorine(cl);
                 if (!clCheck.valid) {
@@ -313,15 +328,15 @@
                     return;
                 }
 
-                result.push({
-                    point: pt,
-                    chlorine: cl,
-                    turbidity: turb,
-                    ph: ph,
-                    alkalinity: alk,
-                    aluminum: al,
-                    oxidizability: ox
-                });
+                const itemData = { point: pt, chlorine: cl, turbidity: turb };
+                if (isFullAnalysisTime) {
+                    itemData.ph = ph;
+                    itemData.alkalinity = alk;
+                    itemData.aluminum = al;
+                    itemData.oxidizability = ox;
+                }
+
+                result.push(itemData);
             }
 
             if (result.length === 0) {
@@ -329,8 +344,9 @@
                 return;
             }
 
+            // Очищаем локальное хранилище после успешной сборки
             allPoints.forEach(pt => {
-                fields.forEach(f => localStorage.removeItem(`${currentBlock}_${currentTime}_${f}_${pt}`));
+                allStorageFields.forEach(f => localStorage.removeItem(`${currentBlock}_${currentTime}_${f}_${pt}`));
             });
 
             if (tg) {
