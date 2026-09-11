@@ -249,22 +249,57 @@
             }
         }
 
+        // Проверка правильности формата (запрещает записи вида ".22" или ",22")
+        function isValidNumberFormat(val) {
+            if (!val) return true;
+            const formatRegex = /^(0|[1-9]\d*)([.,]\d+)?$/;
+            return formatRegex.test(val);
+        }
+
         function sendData() {
             const result = [];
+            let hasError = false;
 
-            allPoints.forEach((pt, index) => {
-                const cl = document.getElementById(`cl_${index}`).value.trim();
-                const turb = document.getElementById(`turb_${index}`).value.trim();
+            for (let index = 0; index < allPoints.length; index++) {
+                const pt = allPoints[index];
+                const clRaw = document.getElementById(`cl_${index}`).value.trim();
+                const turbRaw = document.getElementById(`turb_${index}`).value.trim();
 
-                // Отправляем ТОЛЬКО те точки, в которых есть хотя бы одно значение
-                if (cl !== "" || turb !== "") {
-                    result.push({
-                        point: pt,
-                        chlorine: cl,
-                        turbidity: turb
-                    });
+                if (clRaw === "" && turbRaw === "") continue;
+
+                // 1. Проверка синтаксиса хлора
+                if (!isValidNumberFormat(clRaw)) {
+                    tg.showAlert(`Ошибка в "${pt}" (Хлор): некорректная запись "${clRaw}". Укажите ноль перед точкой (например, 0.22 вместо .22).`);
+                    hasError = true;
+                    break;
                 }
-            });
+
+                // 2. Проверка синтаксиса мутности
+                if (!isValidNumberFormat(turbRaw)) {
+                    tg.showAlert(`Ошибка в "${pt}" (Мутность): некорректная запись "${turbRaw}". Укажите ноль перед точкой (например, 0.5 вместо .5).`);
+                    hasError = true;
+                    break;
+                }
+
+                // Преобразование значения мутности для проверки нормы
+                const turbVal = turbRaw !== "" ? parseFloat(turbRaw.replace(',', '.')) : null;
+
+                // 3. Проверка превышения норматива по мутности
+                if (turbVal !== null && turbVal > 2.0) {
+                    tg.showAlert(`Ошибка в "${pt}": мутность (${turbVal}) превышает допустимую норму!`);
+                    hasError = true;
+                    break;
+                }
+
+                result.push({
+                    point: pt,
+                    chlorine: clRaw,
+                    turbidity: turbRaw
+                });
+            }
+
+            // Блокировка отправки при наличии ошибки
+            if (hasError) return;
 
             if (result.length === 0) {
                 tg.showAlert("Заполните хотя бы одно поле перед отправкой!");
