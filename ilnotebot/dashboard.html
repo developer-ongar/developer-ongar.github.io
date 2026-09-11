@@ -3,286 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дашборд Аналитики 24ч — НФС-3</title>
+    <title>Дашборд аналитики НФС-3</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #2c3e50;
-            --border-color: #e2e8f0;
-            --accent-color: #3182ce;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 12px;
-            box-sizing: border-box;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        h2 {
-            font-size: 1.1rem;
-            margin: 0;
-            color: #1a202c;
-        }
-
-        .controls {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        select, button {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--card-bg);
-            font-size: 0.9rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .chart-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-color);
-        }
-
-        .chart-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .canvas-container {
-            position: relative;
-            height: 220px;
-            width: 100%;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .stat-card {
-            background-color: var(--card-bg);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: #718096;
-            margin-top: 2px;
-        }
-    </style>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 font-sans">
 
-    <div class="header">
-        <h2>📊 Аналитика за 24ч (НФС-3)</h2>
+    <!-- Шапка -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-slate-700 gap-4">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-blue-400">📊 Дашборд аналитики ИЛ НФС-3</h1>
+            <p class="text-xs sm:text-sm text-slate-400">Мониторинг физико-химических показателей воды в режиме реального времени</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow flex items-center gap-2">
+                🔄 Обновить
+            </button>
+        </div>
+    </header>
+
+    <!-- Настройка API сервера -->
+    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mb-6 flex flex-col sm:flex-row items-center gap-3">
+        <label for="apiUrl" class="text-xs text-slate-400 whitespace-nowrap">URL REST API сервера:</label>
+        <input type="text" id="apiUrl" value="http://localhost:8080/api/data" 
+               class="bg-slate-900 border border-slate-600 text-sm rounded-lg px-3 py-1.5 w-full text-blue-300 focus:outline-none focus:border-blue-500"
+               placeholder="http://IP_ВАШЕГО_СЕРВЕРА:8080/api/data">
+        <button onclick="loadData()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-500">
+            Сохранить
+        </button>
     </div>
 
-    <div class="controls">
-        <select id="blockSelect" onchange="updateCharts()">
-            <option value="БВО-1">БВО-1 (35 тыс. м³)</option>
-            <option value="БВО-2">БВО-2 (70 тыс. м³)</option>
-        </select>
-        <button onclick="loadData()">🔄 Обновить</button>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value" id="avgChlorine">—</div>
-            <div class="stat-label">Ср. Хлор (Общий)</div>
+    <!-- Карточки показателей -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">Всего замеров</div>
+            <div id="statTotal" class="text-2xl font-bold text-white">—</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="avgTurbidity">—</div>
-            <div class="stat-label">Ср. Мутность</div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">Ср. Хлор (Cl)</div>
+            <div id="statAvgCl" class="text-2xl font-bold text-emerald-400">—</div>
         </div>
-    </div>
-
-    <div class="chart-card">
-        <div class="chart-title">
-            <span>💧 Динамика остаточного хлора (мг/л)</span>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">Ср. Мутность</div>
+            <div id="statAvgTurb" class="text-2xl font-bold text-amber-400">—</div>
         </div>
-        <div class="canvas-container">
-            <canvas id="chlorineChart"></canvas>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">Последняя точка</div>
+            <div id="statLastPoint" class="text-base font-semibold text-blue-300 truncate">—</div>
         </div>
     </div>
 
-    <div class="chart-card">
-        <div class="chart-title">
-            <span>🌫 Динамика мутности (ЕМФ)</span>
+    <!-- Графики -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- График Хлора -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h2 class="text-base font-semibold mb-4 text-emerald-400">💧 Динамика остаточного хлора (мг/дм³)</h2>
+            <div class="relative h-64">
+                <canvas id="chlorineChart"></canvas>
+            </div>
         </div>
-        <div class="canvas-container">
-            <canvas id="turbidityChart"></canvas>
+
+        <!-- График Мутности -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h2 class="text-base font-semibold mb-4 text-amber-400">🌪️ Динамика мутности (ЕМФ)</h2>
+            <div class="relative h-64">
+                <canvas id="turbidityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица последних измерений -->
+    <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+        <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+            <h2 class="text-base font-semibold text-slate-200">📋 Последние 10 замеров</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
+                    <tr>
+                        <th class="p-3">Дата/Время</th>
+                        <th class="p-3">Смена</th>
+                        <th class="p-3">Блок</th>
+                        <th class="p-3">Точка отбора</th>
+                        <th class="p-3">Хлор</th>
+                        <th class="p-3">Мутность</th>
+                        <th class="p-3">Лаборант</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-slate-700/50">
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-slate-500">Загрузка данных...</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
+        // Инициализация Telegram WebApp API
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
         }
 
-        let rawData = [];
-        let chlorineChartInstance = null;
-        let turbidityChartInstance = null;
+        let chartClInstance = null;
+        let chartTurbInstance = null;
 
-        // Временные слоты за 24 часа
-        const timeLabels = ["09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00", "01:00", "03:00", "05:00", "07:00"];
+        // Преобразование строковых значений в числа
+        function parseNum(val) {
+            if (!val || val === '—' || val === '-') return null;
+            const n = parseFloat(String(val).replace(',', '.'));
+            return isNaN(n) ? null : n;
+        }
 
         async function loadData() {
+            const apiEndpoint = document.getElementById('apiUrl').value.trim();
+            const tableBody = document.getElementById('tableBody');
+
             try {
-                // Если эндпоинт базы данных еще не подключен, используем тестовую структуру
-                // const response = await fetch('/api/get_24h_data');
-                // rawData = await response.json();
+                const response = await fetch(apiEndpoint);
+                if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
                 
-                // Пример локального макета данных для визуализации:
-                rawData = generateMockData();
-                updateCharts();
-            } catch (e) {
-                console.error("Ошибка загрузки данных:", e);
+                const data = await response.json();
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">База данных пуста</td></tr>`;
+                    return;
+                }
+
+                updateStats(data);
+                renderCharts(data);
+                renderTable(data);
+
+            } catch (err) {
+                console.error("Ошибка загрузки API:", err);
+                tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">Ошибка подключения к API (${err.message}). Проверьте адрес и работу бота.</td></tr>`;
             }
         }
 
-        function generateMockData() {
-            const data = [];
-            const blocks = ["БВО-1", "БВО-2"];
-            
-            blocks.forEach(block => {
-                timeLabels.forEach(time => {
-                    data.push({
-                        block: block,
-                        time: time,
-                        chlorine: (1.2 + Math.random() * 0.4).toFixed(2),
-                        turbidity: (0.4 + Math.random() * 0.3).toFixed(2)
-                    });
-                });
-            });
-            return data;
+        function updateStats(data) {
+            document.getElementById('statTotal').innerText = data.length;
+
+            const clVals = data.map(d => parseNum(d.chlorine)).filter(v => v !== null);
+            const turbVals = data.map(d => parseNum(d.turbidity)).filter(v => v !== null);
+
+            if (clVals.length > 0) {
+                const avgCl = (clVals.reduce((a, b) => a + b, 0) / clVals.length).toFixed(2);
+                document.getElementById('statAvgCl').innerText = `${avgCl} мг/л`;
+            }
+
+            if (turbVals.length > 0) {
+                const avgTurb = (turbVals.reduce((a, b) => a + b, 0) / turbVals.length).toFixed(2);
+                document.getElementById('statAvgTurb').innerText = `${avgTurb} ЕМФ`;
+            }
+
+            if (data.length > 0) {
+                document.getElementById('statLastPoint').innerText = `${data[0].point} (${data[0].time_slot})`;
+            }
         }
 
-        function updateCharts() {
-            const selectedBlock = document.getElementById('blockSelect').value;
-            const filteredData = rawData.filter(d => d.block === selectedBlock);
+        function renderCharts(rawData) {
+            // Берем последние 30 записей и разворачиваем в хронологическом порядке
+            const data = [...rawData].slice(0, 30).reverse();
 
-            const chlorineValues = timeLabels.map(t => {
-                const item = filteredData.find(d => d.time === t);
-                return item ? parseFloat(item.chlorine) : null;
-            });
+            const labels = data.map(d => `${d.time_slot} (${d.point})`);
+            const chlorineData = data.map(d => parseNum(d.chlorine));
+            const turbidityData = data.map(d => parseNum(d.turbidity));
 
-            const turbidityValues = timeLabels.map(t => {
-                const item = filteredData.find(d => d.time === t);
-                return item ? parseFloat(item.turbidity) : null;
-            });
+            // Сброс старых графиков
+            if (chartClInstance) chartClInstance.destroy();
+            if (chartTurbInstance) chartTurbInstance.destroy();
 
-            // Расчет средних показателей
-            const validCl = chlorineValues.filter(v => v !== null);
-            const validTurb = turbidityValues.filter(v => v !== null);
-
-            const avgCl = validCl.length ? (validCl.reduce((a, b) => a + b, 0) / validCl.length).toFixed(2) : "—";
-            const avgTurb = validTurb.length ? (validTurb.reduce((a, b) => a + b, 0) / validTurb.length).toFixed(2) : "—";
-
-            document.getElementById('avgChlorine').innerText = avgCl !== "—" ? `${avgCl} мг/л` : "—";
-            document.getElementById('avgTurbidity').innerText = avgTurb !== "—" ? `${avgTurb} ЕМФ` : "—";
-
-            renderChlorineChart(timeLabels, chlorineValues);
-            renderTurbidityChart(timeLabels, turbidityValues);
-        }
-
-        function renderChlorineChart(labels, data) {
-            const ctx = document.getElementById('chlorineChart').getContext('2d');
-            if (chlorineChartInstance) chlorineChartInstance.destroy();
-
-            chlorineChartInstance = new Chart(ctx, {
+            // 1. График Хлора
+            const ctxCl = document.getElementById('chlorineChart').getContext('2d');
+            chartClInstance = new Chart(ctxCl, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Хлор (мг/л)',
-                        data: data,
-                        borderColor: '#3182ce',
-                        backgroundColor: 'rgba(49, 130, 206, 0.1)',
-                        borderWidth: 2,
+                        label: 'Хлор (мг/дм³)',
+                        data: chlorineData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 4
+                        spanGaps: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 0.5,
-                            max: 2.5
-                        }
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#334155' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
                     }
                 }
             });
-        }
 
-        function renderTurbidityChart(labels, data) {
-            const ctx = document.getElementById('turbidityChart').getContext('2d');
-            if (turbidityChartInstance) turbidityChartInstance.destroy();
-
-            turbidityChartInstance = new Chart(ctx, {
-                type: 'bar',
+            // 2. График Мутности
+            const ctxTurb = document.getElementById('turbidityChart').getContext('2d');
+            chartTurbInstance = new Chart(ctxTurb, {
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Мутность (ЕМФ)',
-                        data: data,
-                        backgroundColor: '#ed8936',
-                        borderRadius: 4
+                        data: turbidityData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        spanGaps: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 1.5
-                        }
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#334155' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
                     }
                 }
             });
         }
 
-        window.onload = loadData;
+        function renderTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            const recent = data.slice(0, 10);
+
+            tableBody.innerHTML = recent.map(r => `
+                <tr class="hover:bg-slate-700/40 border-b border-slate-700/50">
+                    <td class="p-3 text-slate-300 font-medium">${r.date} ${r.time_slot}</td>
+                    <td class="p-3 text-slate-400">${r.shift}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${r.block === 'БВО-1' ? 'bg-blue-900/60 text-blue-300' : 'bg-purple-900/60 text-purple-300'}">${r.block}</span></td>
+                    <td class="p-3 font-semibold text-slate-200">${r.point}</td>
+                    <td class="p-3 text-emerald-400 font-bold">${r.chlorine || '—'}</td>
+                    <td class="p-3 text-amber-400 font-bold">${r.turbidity || '—'}</td>
+                    <td class="p-3 text-slate-400">${r.lab_worker || '—'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Автоматическая загрузка при старте
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            // Автообновление каждые 30 секунд
+            setInterval(loadData, 30000);
+        });
     </script>
 </body>
 </html>
