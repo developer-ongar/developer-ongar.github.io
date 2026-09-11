@@ -149,11 +149,12 @@
     <div id="table"></div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
-        tg.MainButton.onClick(() => sendData());
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
+            tg.MainButton.onClick(() => sendData());
+        }
 
         const groups = [
             {
@@ -190,7 +191,6 @@
                 const index = globalIndex++;
                 allPoints.push(pt);
 
-                // Загружаем сохраненные данные из памяти телефона
                 const savedCl = localStorage.getItem(`cl_${pt}`) || '';
                 const savedTurb = localStorage.getItem(`turb_${pt}`) || '';
 
@@ -213,19 +213,28 @@
             container.appendChild(groupCard);
         });
 
-        // Инициализация состояния кнопок при загрузке
+        // Первичная инициализация состояния
         allPoints.forEach((pt, index) => {
             checkState(index, pt);
         });
 
+        function showAlert(message) {
+            if (tg && tg.showAlert) {
+                tg.showAlert(message);
+            } else {
+                alert(message);
+            }
+        }
+
         function checkState(index, ptName) {
             const clInput = document.getElementById(`cl_${index}`);
             const turbInput = document.getElementById(`turb_${index}`);
+            if (!clInput || !turbInput) return;
+
             const cl = clInput.value.trim();
             const turb = turbInput.value.trim();
             const row = document.getElementById(`row_${index}`);
 
-            // Сохраняем введенное значение локально в браузере
             if (ptName) {
                 localStorage.setItem(`cl_${ptName}`, cl);
                 localStorage.setItem(`turb_${ptName}`, turb);
@@ -238,18 +247,21 @@
             }
 
             const hasData = allPoints.some((_, i) => {
-                return document.getElementById(`cl_${i}`).value.trim() !== "" || 
-                       document.getElementById(`turb_${i}`).value.trim() !== "";
+                const elCl = document.getElementById(`cl_${i}`);
+                const elTurb = document.getElementById(`turb_${i}`);
+                return (elCl && elCl.value.trim() !== "") || (elTurb && elTurb.value.trim() !== "");
             });
 
-            if (hasData) {
-                tg.MainButton.show();
-            } else {
-                tg.MainButton.hide();
+            if (tg) {
+                if (hasData) {
+                    tg.MainButton.show();
+                } else {
+                    tg.MainButton.hide();
+                }
             }
         }
 
-        // Проверка правильности формата (запрещает записи вида ".22" или ",22")
+        // Валидатор: требует наличие ведущего нуля для дробей (.22 -> ошибка, 0.22 -> ОК)
         function isValidNumberFormat(val) {
             if (!val) return true;
             const formatRegex = /^(0|[1-9]\d*)([.,]\d+)?$/;
@@ -258,37 +270,35 @@
 
         function sendData() {
             const result = [];
-            let hasError = false;
 
             for (let index = 0; index < allPoints.length; index++) {
                 const pt = allPoints[index];
-                const clRaw = document.getElementById(`cl_${index}`).value.trim();
-                const turbRaw = document.getElementById(`turb_${index}`).value.trim();
+                const clEl = document.getElementById(`cl_${index}`);
+                const turbEl = document.getElementById(`turb_${index}`);
+
+                const clRaw = clEl ? clEl.value.trim() : "";
+                const turbRaw = turbEl ? turbEl.value.trim() : "";
 
                 if (clRaw === "" && turbRaw === "") continue;
 
-                // 1. Проверка синтаксиса хлора
+                // 1. Проверка формата Хлора
                 if (!isValidNumberFormat(clRaw)) {
-                    tg.showAlert(`Ошибка в "${pt}" (Хлор): некорректная запись "${clRaw}". Укажите ноль перед точкой (например, 0.22 вместо .22).`);
-                    hasError = true;
-                    break;
+                    showAlert(`Ошибка в "${pt}" (Хлор): значение "${clRaw}" неверное. Укажите ноль перед точкой (например: 0.22).`);
+                    return; // Полная остановка выполнения
                 }
 
-                // 2. Проверка синтаксиса мутности
+                // 2. Проверка формата Мутности
                 if (!isValidNumberFormat(turbRaw)) {
-                    tg.showAlert(`Ошибка в "${pt}" (Мутность): некорректная запись "${turbRaw}". Укажите ноль перед точкой (например, 0.5 вместо .5).`);
-                    hasError = true;
-                    break;
+                    showAlert(`Ошибка в "${pt}" (Мутность): значение "${turbRaw}" неверное. Укажите ноль перед точкой (например: 0.5).`);
+                    return; // Полная остановка выполнения
                 }
 
-                // Преобразование значения мутности для проверки нормы
                 const turbVal = turbRaw !== "" ? parseFloat(turbRaw.replace(',', '.')) : null;
 
-                // 3. Проверка превышения норматива по мутности
+                // 3. Проверка критической мутности (> 2.0)
                 if (turbVal !== null && turbVal > 2.0) {
-                    tg.showAlert(`Ошибка в "${pt}": мутность (${turbVal}) превышает допустимую норму!`);
-                    hasError = true;
-                    break;
+                    showAlert(`Предупреждение в "${pt}": мутность (${turbVal}) превышает 2.0!`);
+                    return; // Полная остановка выполнения
                 }
 
                 result.push({
@@ -298,15 +308,14 @@
                 });
             }
 
-            // Блокировка отправки при наличии ошибки
-            if (hasError) return;
-
             if (result.length === 0) {
-                tg.showAlert("Заполните хотя бы одно поле перед отправкой!");
+                showAlert("Заполните хотя бы одно поле перед отправкой!");
                 return;
             }
 
-            tg.sendData(JSON.stringify(result));
+            if (tg) {
+                tg.sendData(JSON.stringify(result));
+            }
         }
     </script>
 </body>
