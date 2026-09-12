@@ -1,42 +1,57 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Дашборд аналитики НФС-3</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-2 sm:p-4 md:p-6 font-sans antialiased selection:bg-blue-500 selection:text-white">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-2 sm:p-4 md:p-6 font-sans antialiased selection:bg-blue-500 selection:text-white transition-colors duration-200">
 
     <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
 
         <!-- Шапка -->
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-900/80 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl gap-4">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg dark:shadow-xl gap-4">
             <div>
-                <h1 class="text-lg sm:text-2xl font-bold text-blue-400 flex items-center gap-2">
+                <h1 class="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
                     <span>📊</span> Мониторинг ИЛ НФС-3
                 </h1>
-                <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Детализация по БВО-1 / БВО-2 и аналитика мин/макс/средних</p>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Детализация по БВО-1 / БВО-2 и аналитика мин/макс/средних</p>
             </div>
-            <button onclick="loadData()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 active:scale-95 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
-                🔄 <span>Обновить</span>
-            </button>
+            
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <!-- Переключатель темы -->
+                <button onclick="toggleTheme()" class="flex-1 sm:flex-none bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 border border-slate-300 dark:border-slate-700 active:scale-95">
+                    <span id="themeBtnIcon">☀️</span>
+                    <span id="themeBtnText">Светлая</span>
+                </button>
+
+                <!-- Кнопка обновить -->
+                <button onclick="loadData()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 active:scale-95 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-1.5">
+                    🔄 <span>Обновить</span>
+                </button>
+            </div>
         </header>
 
         <!-- Общие показатели -->
         <div class="grid grid-cols-2 gap-3 sm:gap-4">
-            <div class="bg-slate-900/80 p-3 sm:p-4 rounded-2xl border border-slate-800 shadow-lg">
-                <div class="text-xs text-slate-400 font-medium mb-1">Всего проб отобрано</div>
-                <div id="statTotal" class="text-xl sm:text-3xl font-extrabold text-white">—</div>
+            <div class="bg-white dark:bg-slate-900/80 p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md">
+                <div class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Всего проб отобрано</div>
+                <div id="statTotal" class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">—</div>
             </div>
-            <div class="bg-slate-900/80 p-3 sm:p-4 rounded-2xl border border-slate-800 shadow-lg">
-                <div class="text-xs text-slate-400 font-medium mb-1">Последняя запись</div>
-                <div id="statLastPoint" class="text-xs sm:text-sm font-semibold text-blue-300 truncate mt-1 sm:mt-2">—</div>
+            <div class="bg-white dark:bg-slate-900/80 p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md">
+                <div class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Последняя запись</div>
+                <div id="statLastPoint" class="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-300 truncate mt-1 sm:mt-2">—</div>
             </div>
         </div>
 
@@ -44,100 +59,100 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             
             <!-- 1. Исходная вода — БВО-1 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-400 flex items-center gap-1.5">🌊 1. Исходная вода — БВО-1</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartRawBvo1"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">🌊 1. Исходная вода — БВО-1</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartRawBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartRawBvo1"></div>
             </div>
 
             <!-- 2. Исходная вода — БВО-2 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-300 flex items-center gap-1.5">🌊 2. Исходная вода — БВО-2</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartRawBvo2"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-600 dark:text-cyan-300 flex items-center gap-1.5">🌊 2. Исходная вода — БВО-2</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartRawBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartRawBvo2"></div>
             </div>
 
             <!-- 3. После СМ — БВО-1 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-400 flex items-center gap-1.5">🧪 3. После СМ — БВО-1</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartSmBvo1"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">🧪 3. После СМ — БВО-1</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartSmBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartSmBvo1"></div>
             </div>
 
             <!-- 4. После СМ — БВО-2 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-300 flex items-center gap-1.5">🧪 4. После СМ — БВО-2</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartSmBvo2"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-600 dark:text-emerald-300 flex items-center gap-1.5">🧪 4. После СМ — БВО-2</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartSmBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartSmBvo2"></div>
             </div>
 
             <!-- 5. Фильтры — БВО-1 (24 точки) -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-blue-400 flex items-center gap-1.5">🧹 5. Фильтры — БВО-1</h2>
-                    <div class="relative h-60 sm:h-72 w-full"><canvas id="chartFiltersBvo1"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-1.5">🧹 5. Фильтры — БВО-1</h2>
+                    <div class="relative h-56 sm:h-72 w-full"><canvas id="chartFiltersBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartFiltersBvo1"></div>
             </div>
 
             <!-- 6. Фильтры — БВО-2 (36 точек) -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-purple-400 flex items-center gap-1.5">🧹 6. Фильтры — БВО-2</h2>
-                    <div class="relative h-60 sm:h-72 w-full"><canvas id="chartFiltersBvo2"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-purple-600 dark:text-purple-400 flex items-center gap-1.5">🧹 6. Фильтры — БВО-2</h2>
+                    <div class="relative h-56 sm:h-72 w-full"><canvas id="chartFiltersBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartFiltersBvo2"></div>
             </div>
 
             <!-- 7. КФВ — БВО-1 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-400 flex items-center gap-1.5">💧 7. КФВ — БВО-1</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartKfvBvo1"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-600 dark:text-teal-400 flex items-center gap-1.5">💧 7. КФВ — БВО-1</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartKfvBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartKfvBvo1"></div>
             </div>
 
             <!-- 8. КФВ — БВО-2 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-300 flex items-center gap-1.5">💧 8. КФВ — БВО-2</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartKfvBvo2"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-600 dark:text-teal-300 flex items-center gap-1.5">💧 8. КФВ — БВО-2</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartKfvBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartKfvBvo2"></div>
             </div>
 
             <!-- 9. Коллектор — БВО-1 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-400 flex items-center gap-1.5">🔀 9. Коллектор — БВО-1</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartCollectorBvo1"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-600 dark:text-pink-400 flex items-center gap-1.5">🔀 9. Коллектор — БВО-1</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartCollectorBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartCollectorBvo1"></div>
             </div>
 
             <!-- 10. Коллектор — БВО-2 -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-300 flex items-center gap-1.5">🔀 10. Коллектор — БВО-2</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartCollectorBvo2"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-600 dark:text-pink-300 flex items-center gap-1.5">🔀 10. Коллектор — БВО-2</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartCollectorBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartCollectorBvo2"></div>
             </div>
 
             <!-- 11. Насосная станция -->
-            <div class="bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg md:col-span-2 flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md md:col-span-2 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-amber-400 flex items-center gap-1.5">🚰 11. Насосная станция (Насосы)</h2>
-                    <div class="relative h-56 sm:h-64 w-full"><canvas id="chartPumps"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-amber-600 dark:text-amber-400 flex items-center gap-1.5">𚰰 11. Насосная станция (Насосы)</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartPumps"></canvas></div>
                 </div>
                 <div id="stats-chartPumps"></div>
             </div>
@@ -145,13 +160,16 @@
         </div>
 
         <!-- Таблица замеров -->
-        <div class="bg-slate-900/90 rounded-2xl border border-slate-800 shadow-lg overflow-hidden">
-            <div class="p-4 border-b border-slate-800">
-                <h2 class="text-sm sm:text-base font-semibold text-slate-200 flex items-center gap-2">📋 Последние замеры</h2>
+        <div class="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap justify-between items-center gap-3">
+                <h2 class="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">📋 Последние замеры</h2>
+                <button onclick="openModal()" class="bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 text-xs sm:text-sm font-semibold px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 active:scale-95">
+                    👁️ <span>Полный просмотр</span>
+                </button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
-                    <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                    <thead class="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                         <tr>
                             <th class="p-3 sm:p-4">Дата/Время</th>
                             <th class="p-3 sm:p-4">Смена</th>
@@ -162,13 +180,65 @@
                             <th class="p-3 sm:p-4">Лаборант</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-800/60">
-                        <tr><td colspan="7" class="p-4 text-center text-slate-500">Загрузка данных...</td></tr>
+                    <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                        <tr><td colspan="7" class="p-4 text-center text-slate-400">Загрузка данных...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+    </div>
+
+    <!-- Модальное окно "Полный просмотр замеров" -->
+    <div id="fullModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-6xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100">
+            
+            <!-- Шапка модалки -->
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                        📋 Полный журнал замеров НФС-3
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Все сохранённые точки с возможностью поиска и фильтрации</p>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-xl p-1.5 rounded-lg transition-colors">✕</button>
+            </div>
+
+            <!-- Панель поиска и фильтров -->
+            <div class="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-900/60 flex flex-col sm:flex-row gap-2.5 sm:gap-4">
+                <input type="text" id="searchInput" oninput="filterModalTable()" placeholder="🔍 Поиск по точке, смене, лаборанту..." class="w-full sm:flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100">
+                <select id="blockFilter" onchange="filterModalTable()" class="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-slate-100">
+                    <option value="ALL">Все блоки</option>
+                    <option value="БВО-1">БВО-1</option>
+                    <option value="БВО-2">БВО-2</option>
+                </select>
+            </div>
+
+            <!-- Таблица всех данных -->
+            <div class="overflow-auto flex-1 p-2 sm:p-4">
+                <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                    <thead class="bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+                        <tr>
+                            <th class="p-3">Дата/Время</th>
+                            <th class="p-3">Смена</th>
+                            <th class="p-3">Блок</th>
+                            <th class="p-3">Точка отбора</th>
+                            <th class="p-3">Хлор (мг/л)</th>
+                            <th class="p-3">Мутность (ЕМФ)</th>
+                            <th class="p-3">Лаборант</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody" class="divide-y divide-slate-200 dark:divide-slate-800/60">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Футер модалки -->
+            <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-xs text-slate-500 flex justify-between items-center">
+                <span id="modalCounter">Отображено: 0</span>
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl font-medium transition-all">Закрыть</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -179,6 +249,36 @@
 
         const API_URL = 'https://ilnote-bot-production.up.railway.app/api/data';
         const chartInstances = {};
+        let globalData = [];
+
+        // Переключение темы (Светлая / Тёмная)
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeUI(isDark);
+            if (globalData.length > 0) renderAllCharts(globalData);
+        }
+
+        function updateThemeUI(isDark) {
+            document.getElementById('themeBtnIcon').innerText = isDark ? '☀️' : '🌙';
+            document.getElementById('themeBtnText').innerText = isDark ? 'Светлая' : 'Тёмная';
+        }
+
+        function initTheme() {
+            let saved = localStorage.getItem('theme');
+            if (!saved && window.Telegram && window.Telegram.WebApp) {
+                saved = window.Telegram.WebApp.colorScheme;
+            }
+            const isDark = saved !== 'light';
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeUI(isDark);
+        }
 
         function parseNum(val) {
             if (!val || val === '—' || val === '-') return null;
@@ -223,10 +323,11 @@
                 const data = await response.json();
 
                 if (!Array.isArray(data) || data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">База данных пуста</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">База данных пуста</td></tr>`;
                     return;
                 }
 
+                globalData = data;
                 updateStats(data);
                 renderAllCharts(data);
                 renderTable(data);
@@ -245,9 +346,7 @@
         }
 
         function renderDualChart(canvasId, datasetList, items, maxPoints = 24) {
-            // Ограничиваем количество точек согласно переданному maxPoints
             const chartData = [...items].slice(0, maxPoints).reverse();
-            
             const labels = chartData.map(d => formatShortLabel(d.time_slot, d.point));
             const chlorineData = chartData.map(d => parseNum(d.chlorine));
             const turbidityData = chartData.map(d => parseNum(d.turbidity));
@@ -258,7 +357,12 @@
 
             const ctx = document.getElementById(canvasId).getContext('2d');
             const datasets = [];
-            
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(51, 65, 85, 0.4)' : 'rgba(203, 213, 225, 0.6)';
+            const tickColor = isDark ? '#94a3b8' : '#64748b';
+            const legendTextColor = isDark ? '#e2e8f0' : '#1e293b';
+
             if (datasetList.includes('chlorine')) {
                 datasets.push({
                     label: 'Хлор (мг/л)',
@@ -297,13 +401,13 @@
                     scales: {
                         x: { 
                             ticks: { 
-                                color: '#94a3b8', 
+                                color: tickColor, 
                                 font: { size: 7.5 },
                                 autoSkip: false,
                                 maxRotation: 90,
                                 minRotation: 45
                             }, 
-                            grid: { color: 'rgba(51, 65, 85, 0.4)' } 
+                            grid: { color: gridColor } 
                         },
                         yCl: {
                             type: 'linear',
@@ -314,7 +418,7 @@
                                 font: { size: 9 },
                                 callback: function(val) { return Number(val).toFixed(2); }
                             },
-                            grid: { color: 'rgba(51, 65, 85, 0.4)' }
+                            grid: { color: gridColor }
                         },
                         yTurb: {
                             type: 'linear',
@@ -330,7 +434,7 @@
                     },
                     plugins: {
                         legend: { 
-                            labels: { color: '#e2e8f0', boxWidth: 10, font: { size: 10 } } 
+                            labels: { color: legendTextColor, boxWidth: 10, font: { size: 10 } } 
                         },
                         tooltip: {
                             callbacks: {
@@ -352,23 +456,23 @@
             const container = document.getElementById(`stats-${canvasId}`);
             if (!container) return;
 
-            let html = `<div class="mt-3 pt-2 border-t border-slate-800 text-[11px] sm:text-xs grid grid-cols-1 gap-1.5 text-slate-300">`;
+            let html = `<div class="mt-3 pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs grid grid-cols-1 gap-1.5 text-slate-700 dark:text-slate-300">`;
 
             if (datasetList.includes('chlorine')) {
                 const cl = getMetricStats(clArray, 2);
                 html += `
-                    <div class="flex justify-between items-center bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-800/80">
-                        <span class="text-emerald-400 font-medium">💧 Хлор:</span>
-                        <span>Мин: <b class="text-white">${cl.min}</b> | Ср: <b class="text-emerald-300">${cl.avg}</b> | Макс: <b class="text-white">${cl.max}</b></span>
+                    <div class="flex justify-between items-center bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800/80">
+                        <span class="text-emerald-600 dark:text-emerald-400 font-medium">💧 Хлор:</span>
+                        <span>Мин: <b class="text-slate-900 dark:text-white">${cl.min}</b> | Ср: <b class="text-emerald-600 dark:text-emerald-300">${cl.avg}</b> | Макс: <b class="text-slate-900 dark:text-white">${cl.max}</b></span>
                     </div>`;
             }
 
             if (datasetList.includes('turbidity')) {
                 const turb = getMetricStats(turbArray, 1);
                 html += `
-                    <div class="flex justify-between items-center bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-800/80">
-                        <span class="text-amber-400 font-medium">🌪️ Мутность:</span>
-                        <span>Мин: <b class="text-white">${turb.min}</b> | Ср: <b class="text-amber-300">${turb.avg}</b> | Макс: <b class="text-white">${turb.max}</b></span>
+                    <div class="flex justify-between items-center bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800/80">
+                        <span class="text-amber-600 dark:text-amber-400 font-medium">🌪️ Мутность:</span>
+                        <span>Мин: <b class="text-slate-900 dark:text-white">${turb.min}</b> | Ср: <b class="text-amber-600 dark:text-amber-300">${turb.avg}</b> | Макс: <b class="text-slate-900 dark:text-white">${turb.max}</b></span>
                     </div>`;
             }
 
@@ -377,48 +481,84 @@
         }
 
         function renderAllCharts(data) {
-            // 1-2. Исходная вода — БВО-1 и БВО-2
             renderDualChart('chartRawBvo1', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая'], 'БВО-1'), 24);
             renderDualChart('chartRawBvo2', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая'], 'БВО-2'), 24);
 
-            // 3-4. После СМ — БВО-1 и БВО-2
             renderDualChart('chartSmBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-1'), 24);
             renderDualChart('chartSmBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-2'), 24);
 
-            // 5-6. Фильтры — БВО-1 (24 точки) и БВО-2 (36 точек)
             renderDualChart('chartFiltersBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-1'), 24);
             renderDualChart('chartFiltersBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-2'), 36);
 
-            // 7-8. КФВ — БВО-1 и БВО-2
             renderDualChart('chartKfvBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-1'), 24);
             renderDualChart('chartKfvBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-2'), 24);
 
-            // 9-10. Коллектор — БВО-1 и БВО-2
             renderDualChart('chartCollectorBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-1'), 24);
             renderDualChart('chartCollectorBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-2'), 24);
 
-            // 11. Насосы
             renderDualChart('chartPumps', ['chlorine', 'turbidity'], filterPoints(data, ['насос', 'нс']), 24);
+        }
+
+        function generateRowHTML(r) {
+            const blockBadge = r.block === 'БВО-1' 
+                ? 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800/50' 
+                : 'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-800/50';
+
+            return `
+                <tr class="hover:bg-slate-100/60 dark:hover:bg-slate-800/40 transition-colors">
+                    <td class="p-3 sm:p-4 text-slate-700 dark:text-slate-300 font-medium">${r.date || ''} ${r.time_slot || ''}</td>
+                    <td class="p-3 sm:p-4 text-slate-500 dark:text-slate-400">${r.shift || '—'}</td>
+                    <td class="p-3 sm:p-4"><span class="px-2 py-0.5 rounded-md text-xs font-semibold border ${blockBadge}">${r.block || '—'}</span></td>
+                    <td class="p-3 sm:p-4 font-semibold text-slate-800 dark:text-slate-200">${r.point || '—'}</td>
+                    <td class="p-3 sm:p-4 text-emerald-600 dark:text-emerald-400 font-bold">${r.chlorine || '—'}</td>
+                    <td class="p-3 sm:p-4 text-amber-600 dark:text-amber-400 font-bold">${r.turbidity || '—'}</td>
+                    <td class="p-3 sm:p-4 text-slate-500 dark:text-slate-400">${r.lab_worker || '—'}</td>
+                </tr>
+            `;
         }
 
         function renderTable(data) {
             const tableBody = document.getElementById('tableBody');
             const recent = data.slice(0, 15);
+            tableBody.innerHTML = recent.map(generateRowHTML).join('');
+        }
 
-            tableBody.innerHTML = recent.map(r => `
-                <tr class="hover:bg-slate-800/40 transition-colors">
-                    <td class="p-3 sm:p-4 text-slate-300 font-medium">${r.date} ${r.time_slot}</td>
-                    <td class="p-3 sm:p-4 text-slate-400">${r.shift}</td>
-                    <td class="p-3 sm:p-4"><span class="px-2 py-0.5 rounded-md text-xs font-semibold ${r.block === 'БВО-1' ? 'bg-blue-950 text-blue-300 border border-blue-800/50' : 'bg-purple-950 text-purple-300 border border-purple-800/50'}">${r.block}</span></td>
-                    <td class="p-3 sm:p-4 font-semibold text-slate-200">${r.point}</td>
-                    <td class="p-3 sm:p-4 text-emerald-400 font-bold">${r.chlorine || '—'}</td>
-                    <td class="p-3 sm:p-4 text-amber-400 font-bold">${r.turbidity || '—'}</td>
-                    <td class="p-3 sm:p-4 text-slate-400">${r.lab_worker || '—'}</td>
-                </tr>
-            `).join('');
+        // Модальное окно полного просмотра
+        function openModal() {
+            document.getElementById('fullModal').classList.remove('hidden');
+            filterModalTable();
+        }
+
+        function closeModal() {
+            document.getElementById('fullModal').classList.add('hidden');
+        }
+
+        function filterModalTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const block = document.getElementById('blockFilter').value;
+
+            const filtered = globalData.filter(r => {
+                const matchBlock = block === 'ALL' || r.block === block;
+                const matchSearch = !search || 
+                    (r.point && r.point.toLowerCase().includes(search)) ||
+                    (r.lab_worker && r.lab_worker.toLowerCase().includes(search)) ||
+                    (r.shift && r.shift.toLowerCase().includes(search)) ||
+                    (r.date && r.date.toLowerCase().includes(search));
+                return matchBlock && matchSearch;
+            });
+
+            const modalBody = document.getElementById('modalTableBody');
+            document.getElementById('modalCounter').innerText = `Отображено: ${filtered.length} из ${globalData.length}`;
+
+            if (filtered.length === 0) {
+                modalBody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Ничего не найдено</td></tr>`;
+            } else {
+                modalBody.innerHTML = filtered.map(generateRowHTML).join('');
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
             loadData();
             setInterval(loadData, 30000);
         });
