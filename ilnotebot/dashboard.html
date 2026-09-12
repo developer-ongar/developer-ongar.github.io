@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Дашборд аналитики НФС-3</title>
+    <title>Аналитика ИЛ НФС-3</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,7 +24,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg dark:shadow-xl gap-4">
             <div>
                 <h1 class="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                    <span>📊</span> Мониторинг ИЛ НФС-3
+                    <span>📊</span> Мониторинг данных ИЛ НФС-3
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Детализация по БВО-1 / БВО-2 и аналитика мин/макс/средних</p>
             </div>
@@ -58,103 +58,103 @@
         <!-- Сетка графиков -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             
-            <!-- 1. Исходная вода — БВО-1 -->
+            <!-- 1. Насосная станция (Сверху) -->
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md md:col-span-2 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-amber-600 dark:text-amber-400 flex items-center gap-1.5">🚰 1. Насосная станция (Насосы)</h2>
+                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartPumps"></canvas></div>
+                </div>
+                <div id="stats-chartPumps"></div>
+            </div>
+
+            <!-- 2. Исходная вода — БВО-1 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">🌊 1. Исходная вода — БВО-1</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">🌊 2. Исходная вода — БВО-1</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartRawBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartRawBvo1"></div>
             </div>
 
-            <!-- 2. Исходная вода — БВО-2 -->
+            <!-- 3. Исходная вода — БВО-2 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-600 dark:text-cyan-300 flex items-center gap-1.5">🌊 2. Исходная вода — БВО-2</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-cyan-600 dark:text-cyan-300 flex items-center gap-1.5">🌊 3. Исходная вода — БВО-2</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartRawBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartRawBvo2"></div>
             </div>
 
-            <!-- 3. После СМ — БВО-1 -->
+            <!-- 4. После СМ — БВО-1 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">🧪 3. После СМ — БВО-1</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">🧪 4. После СМ — БВО-1</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartSmBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartSmBvo1"></div>
             </div>
 
-            <!-- 4. После СМ — БВО-2 -->
+            <!-- 5. После СМ — БВО-2 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-600 dark:text-emerald-300 flex items-center gap-1.5">🧪 4. После СМ — БВО-2</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-emerald-600 dark:text-emerald-300 flex items-center gap-1.5">🧪 5. После СМ — БВО-2</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartSmBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartSmBvo2"></div>
             </div>
 
-            <!-- 5. Фильтры — БВО-1 (24 точки) -->
+            <!-- 6. КФВ — БВО-1 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-1.5">🧹 5. Фильтры — БВО-1</h2>
-                    <div class="relative h-56 sm:h-72 w-full"><canvas id="chartFiltersBvo1"></canvas></div>
-                </div>
-                <div id="stats-chartFiltersBvo1"></div>
-            </div>
-
-            <!-- 6. Фильтры — БВО-2 (36 точек) -->
-            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
-                <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-purple-600 dark:text-purple-400 flex items-center gap-1.5">🧹 6. Фильтры — БВО-2</h2>
-                    <div class="relative h-56 sm:h-72 w-full"><canvas id="chartFiltersBvo2"></canvas></div>
-                </div>
-                <div id="stats-chartFiltersBvo2"></div>
-            </div>
-
-            <!-- 7. КФВ — БВО-1 -->
-            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
-                <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-600 dark:text-teal-400 flex items-center gap-1.5">💧 7. КФВ — БВО-1</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-600 dark:text-teal-400 flex items-center gap-1.5">💧 6. КФВ — БВО-1</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartKfvBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartKfvBvo1"></div>
             </div>
 
-            <!-- 8. КФВ — БВО-2 -->
+            <!-- 7. КФВ — БВО-2 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-600 dark:text-teal-300 flex items-center gap-1.5">💧 8. КФВ — БВО-2</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-teal-600 dark:text-teal-300 flex items-center gap-1.5">💧 7. КФВ — БВО-2</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartKfvBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartKfvBvo2"></div>
             </div>
 
-            <!-- 9. Коллектор — БВО-1 -->
+            <!-- 8. Коллектор — БВО-1 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-600 dark:text-pink-400 flex items-center gap-1.5">🔀 9. Коллектор — БВО-1</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-600 dark:text-pink-400 flex items-center gap-1.5">🔀 8. Коллектор — БВО-1</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartCollectorBvo1"></canvas></div>
                 </div>
                 <div id="stats-chartCollectorBvo1"></div>
             </div>
 
-            <!-- 10. Коллектор — БВО-2 -->
+            <!-- 9. Коллектор — БВО-2 -->
             <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-600 dark:text-pink-300 flex items-center gap-1.5">🔀 10. Коллектор — БВО-2</h2>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-pink-600 dark:text-pink-300 flex items-center gap-1.5">🔀 9. Коллектор — БВО-2</h2>
                     <div class="relative h-52 sm:h-64 w-full"><canvas id="chartCollectorBvo2"></canvas></div>
                 </div>
                 <div id="stats-chartCollectorBvo2"></div>
             </div>
 
-            <!-- 11. Насосная станция -->
-            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md md:col-span-2 flex flex-col justify-between">
+            <!-- 10. Фильтры — БВО-1 (24 точки) -->
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-amber-600 dark:text-amber-400 flex items-center gap-1.5">𚰰 11. Насосная станция (Насосы)</h2>
-                    <div class="relative h-52 sm:h-64 w-full"><canvas id="chartPumps"></canvas></div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-1.5">🧹 10. Фильтры — БВО-1</h2>
+                    <div class="relative h-56 sm:h-72 w-full"><canvas id="chartFiltersBvo1"></canvas></div>
                 </div>
-                <div id="stats-chartPumps"></div>
+                <div id="stats-chartFiltersBvo1"></div>
+            </div>
+
+            <!-- 11. Фильтры — БВО-2 (36 точек) -->
+            <div class="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
+                <div>
+                    <h2 class="text-sm sm:text-base font-semibold mb-3 text-purple-600 dark:text-purple-400 flex items-center gap-1.5">🧹 11. Фильтры — БВО-2</h2>
+                    <div class="relative h-56 sm:h-72 w-full"><canvas id="chartFiltersBvo2"></canvas></div>
+                </div>
+                <div id="stats-chartFiltersBvo2"></div>
             </div>
 
         </div>
@@ -176,7 +176,7 @@
                             <th class="p-3 sm:p-4">Блок</th>
                             <th class="p-3 sm:p-4">Точка отбора</th>
                             <th class="p-3 sm:p-4">Хлор (мг/л)</th>
-                            <th class="p-3 sm:p-4">Мутность (ЕМФ)</th>
+                            <th class="p-3 sm:p-4">Мутность (мг/л)</th>
                             <th class="p-3 sm:p-4">Лаборант</th>
                         </tr>
                     </thead>
@@ -197,7 +197,7 @@
             <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
                 <div>
                     <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
-                        📋 Полный журнал замеров НФС-3
+                        📋 Полный список данных ИЛ НФС-3
                     </h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Все сохранённые точки с возможностью поиска и фильтрации</p>
                 </div>
@@ -224,7 +224,7 @@
                             <th class="p-3">Блок</th>
                             <th class="p-3">Точка отбора</th>
                             <th class="p-3">Хлор (мг/л)</th>
-                            <th class="p-3">Мутность (ЕМФ)</th>
+                            <th class="p-3">Мутность (мг/л)</th>
                             <th class="p-3">Лаборант</th>
                         </tr>
                     </thead>
@@ -251,7 +251,6 @@
         const chartInstances = {};
         let globalData = [];
 
-        // Переключение темы (Светлая / Тёмная)
         function toggleTheme() {
             const html = document.documentElement;
             html.classList.toggle('dark');
@@ -481,22 +480,28 @@
         }
 
         function renderAllCharts(data) {
+            // 1. Насосы (вверху)
+            renderDualChart('chartPumps', ['chlorine', 'turbidity'], filterPoints(data, ['насос', 'нс']), 24);
+
+            // 2-3. Исходная вода — БВО-1 и БВО-2
             renderDualChart('chartRawBvo1', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая'], 'БВО-1'), 24);
             renderDualChart('chartRawBvo2', ['turbidity'], filterPoints(data, ['исход', 'исх', 'сырая'], 'БВО-2'), 24);
 
+            // 4-5. После СМ — БВО-1 и БВО-2
             renderDualChart('chartSmBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-1'), 24);
             renderDualChart('chartSmBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['см', 'смесител'], 'БВО-2'), 24);
 
-            renderDualChart('chartFiltersBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-1'), 24);
-            renderDualChart('chartFiltersBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-2'), 36);
-
+            // 6-7. КФВ — БВО-1 и БВО-2
             renderDualChart('chartKfvBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-1'), 24);
             renderDualChart('chartKfvBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['кфв'], 'БВО-2'), 24);
 
+            // 8-9. Коллектор — БВО-1 и БВО-2
             renderDualChart('chartCollectorBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-1'), 24);
             renderDualChart('chartCollectorBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['коллектор', 'общ'], 'БВО-2'), 24);
 
-            renderDualChart('chartPumps', ['chlorine', 'turbidity'], filterPoints(data, ['насос', 'нс']), 24);
+            // 10-11. Фильтры — БВО-1 и БВО-2 (внизу)
+            renderDualChart('chartFiltersBvo1', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-1'), 24);
+            renderDualChart('chartFiltersBvo2', ['chlorine', 'turbidity'], filterPoints(data, ['фильтр', 'ф-'], 'БВО-2'), 36);
         }
 
         function generateRowHTML(r) {
@@ -523,7 +528,6 @@
             tableBody.innerHTML = recent.map(generateRowHTML).join('');
         }
 
-        // Модальное окно полного просмотра
         function openModal() {
             document.getElementById('fullModal').classList.remove('hidden');
             filterModalTable();
