@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ввод анализов</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
         :root {
             --bg: var(--tg-theme-secondary-bg-color, #f0f0f2);
@@ -111,7 +112,7 @@
 
         .inputs-secondary {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 4px;
         }
 
@@ -145,6 +146,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="header">
@@ -156,220 +158,731 @@
 
     <script>
         const tg = window.Telegram?.WebApp;
+
         if (tg) {
             tg.expand();
+
             tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
+
             tg.MainButton.onClick(() => sendData());
         }
 
         const urlParams = new URLSearchParams(window.location.search);
+
         const currentBlock = urlParams.get('block') || 'БВО-1';
         const currentTime = urlParams.get('time') || '09:00';
 
-        const isFullAnalysisTime = currentTime === '09:00' || currentTime === '21:00';
+        // Полный анализ только в 09:00 и 21:00
+        const isFullAnalysisTime =
+            currentTime === '09:00' ||
+            currentTime === '21:00';
+
         const isBvo1 = currentBlock.toUpperCase().includes('БВО-1');
 
-        document.getElementById('page-subtitle').innerText = `Блок: ${currentBlock} | Время: ${currentTime}`;
+        document.getElementById('page-subtitle').innerText =
+            `Блок: ${currentBlock} | Время: ${currentTime}`;
 
-        // Динамический генератор списка фильтров
+
+        // =========================================================
+        // ФИЛЬТРЫ
+        // =========================================================
+
         const filterCount = isBvo1 ? 8 : 12;
-        const filterItems = Array.from({ length: filterCount }, (_, i) => `Фильтр ${i + 1}`);
 
-        // Формирование списка групп в зависимости от блока
+        const filterItems = Array.from(
+            { length: filterCount },
+            (_, i) => `Фильтр ${i + 1}`
+        );
+
+
+        // =========================================================
+        // ГРУППЫ
+        // =========================================================
+
         const groups = [];
 
-        // Группа "Насосы" добавляется только для БВО-1
+
+        // Насосы только для БВО-1
         if (isBvo1) {
             groups.push({
                 title: "Насосы",
-                items: ["Насос 1", "Насос 2", "Насос 3", "Насос 4", "Насос 5", "Насос 6"]
+
+                items: [
+                    "Насос 1",
+                    "Насос 2",
+                    "Насос 3",
+                    "Насос 4",
+                    "Насос 5",
+                    "Насос 6"
+                ]
             });
         }
+
 
         groups.push(
             {
                 title: "Управление и коллекторы",
-                items: ["УФО 1", "УФО 2", "КЧВ", "КФВ", "Общий коллектор", "После смесителя", "Исх. вода", "Оборотная вода"]
+
+                items: [
+                    "УФО 1",
+                    "УФО 2",
+                    "КЧВ",
+                    "КФВ",
+                    "Общий коллектор",
+                    "После смесителя",
+                    "Исх. вода",
+                    "Оборотная вода"
+                ]
             },
+
             {
                 title: "Фильтры",
+
                 items: filterItems
             }
         );
 
+
         const container = document.getElementById('table');
+
         let globalIndex = 0;
+
         const allPoints = [];
 
+
+        // =========================================================
+        // ОПРЕДЕЛЕНИЕ ДОПОЛНИТЕЛЬНЫХ ПОЛЕЙ
+        // =========================================================
+
         function hasSecondaryFields(ptName) {
-            if (ptName.toLowerCase().startsWith('фильтр')) return false;
+
+            // Для фильтров дополнительных показателей нет
+            if (ptName.toLowerCase().startsWith('фильтр')) {
+                return false;
+            }
+
+            // Дополнительные показатели только в полном анализе
             return isFullAnalysisTime;
         }
 
+
+        // =========================================================
+        // НОВАЯ ЛОГИКА ПОЛЕЙ ДЛЯ КАЖДОЙ ТОЧКИ
+        // =========================================================
+
         function getActiveFieldsForPoint(ptName) {
-            return hasSecondaryFields(ptName) 
-                ? ['cl', 'turb', 'ph', 'alk', 'al', 'ox'] 
-                : ['cl', 'turb'];
+
+            // Во всех обычных анализах только:
+            // Хлор + Мутность
+
+            if (!hasSecondaryFields(ptName)) {
+                return ['cl', 'turb'];
+            }
+
+
+            // -----------------------------------------------------
+            // КФВ
+            // Хлор + Мутность + pH
+            // -----------------------------------------------------
+
+            if (ptName === "КФВ") {
+                return [
+                    'cl',
+                    'turb',
+                    'ph'
+                ];
+            }
+
+
+            // -----------------------------------------------------
+            // ОБЩИЙ КОЛЛЕКТОР
+            // Хлор + Мутность + pH + Щелочность
+            // -----------------------------------------------------
+
+            if (ptName === "Общий коллектор") {
+                return [
+                    'cl',
+                    'turb',
+                    'ph',
+                    'alk'
+                ];
+            }
+
+
+            // -----------------------------------------------------
+            // ПОСЛЕ СМЕСИТЕЛЯ
+            // Хлор + Мутность + pH + Щелочность + Окисляемость
+            // -----------------------------------------------------
+
+            if (ptName === "После смесителя") {
+                return [
+                    'cl',
+                    'turb',
+                    'ph',
+                    'alk',
+                    'ox'
+                ];
+            }
+
+
+            // -----------------------------------------------------
+            // ИСХОДНАЯ ВОДА
+            // Хлор + Мутность + pH + Щелочность + Окисляемость
+            // -----------------------------------------------------
+
+            if (ptName === "Исх. вода") {
+                return [
+                    'cl',
+                    'turb',
+                    'ph',
+                    'alk',
+                    'ox'
+                ];
+            }
+
+
+            // -----------------------------------------------------
+            // ОБОРОТНАЯ ВОДА
+            // Хлор + Мутность + Алюминий
+            // -----------------------------------------------------
+
+            if (ptName === "Оборотная вода") {
+                return [
+                    'cl',
+                    'turb',
+                    'al'
+                ];
+            }
+
+
+            // -----------------------------------------------------
+            // ВСЕ ОСТАЛЬНЫЕ ТОЧКИ
+            // -----------------------------------------------------
+            // УФО 1
+            // УФО 2
+            // КЧВ
+            // Насосы
+            //
+            // Хлор + Мутность + pH + Щелочность + Al + Окисляемость
+            // -----------------------------------------------------
+
+            return [
+                'cl',
+                'turb',
+                'ph',
+                'alk',
+                'al',
+                'ox'
+            ];
         }
 
+
+        // =========================================================
+        // СОЗДАНИЕ ИНТЕРФЕЙСА
+        // =========================================================
+
         groups.forEach(group => {
+
             const groupHeader = document.createElement('div');
+
             groupHeader.className = 'section-header';
+
             groupHeader.innerText = group.title;
+
             container.appendChild(groupHeader);
 
+
             const groupCard = document.createElement('div');
+
             groupCard.className = 'group-card';
 
+
             group.items.forEach(pt => {
+
                 const index = globalIndex++;
+
                 allPoints.push(pt);
 
-                const showSecondary = hasSecondaryFields(pt);
-                const getVal = (field) => localStorage.getItem(`${currentBlock}_${currentTime}_${field}_${pt}`) || '';
+
+                const showSecondary =
+                    hasSecondaryFields(pt);
+
+
+                const getVal = (field) => {
+
+                    return localStorage.getItem(
+                        `${currentBlock}_${currentTime}_${field}_${pt}`
+                    ) || '';
+                };
+
 
                 const row = document.createElement('div');
+
                 row.className = 'row';
+
                 row.id = `row_${index}`;
+
+
                 row.innerHTML = `
                     <div class="row-header">
                         <div class="status-dot"></div>
                         <div class="label">${pt}</div>
                     </div>
+
                     <div class="inputs-primary">
-                        <input type="text" inputmode="decimal" id="cl_${index}" value="${getVal('cl')}" placeholder="Хлор (Cl)" oninput="checkState(${index}, '${pt}')">
-                        <input type="text" inputmode="decimal" id="turb_${index}" value="${getVal('turb')}" placeholder="Мутность" oninput="checkState(${index}, '${pt}')">
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="cl_${index}"
+                            value="${getVal('cl')}"
+                            placeholder="Хлор (Cl)"
+                            oninput="checkState(${index}, '${pt}')"
+                        >
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="turb_${index}"
+                            value="${getVal('turb')}"
+                            placeholder="Мутность"
+                            oninput="checkState(${index}, '${pt}')"
+                        >
+
                     </div>
+
+
                     <div class="inputs-secondary ${showSecondary ? '' : 'hidden'}">
-                        <input type="text" inputmode="decimal" id="ph_${index}" value="${getVal('ph')}" placeholder="pH" oninput="checkState(${index}, '${pt}')">
-                        <input type="text" inputmode="decimal" id="alk_${index}" value="${getVal('alk')}" placeholder="Щел." oninput="checkState(${index}, '${pt}')">
-                        <input type="text" inputmode="decimal" id="al_${index}" value="${getVal('al')}" placeholder="Al" oninput="checkState(${index}, '${pt}')">
-                        <input type="text" inputmode="decimal" id="ox_${index}" value="${getVal('ox')}" placeholder="Окисл." oninput="checkState(${index}, '${pt}')">
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="ph_${index}"
+                            value="${getVal('ph')}"
+                            placeholder="pH"
+                            oninput="checkState(${index}, '${pt}')"
+                        >
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="alk_${index}"
+                            value="${getVal('alk')}"
+                            placeholder="Щел."
+                            oninput="checkState(${index}, '${pt}')"
+                        >
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="al_${index}"
+                            value="${getVal('al')}"
+                            placeholder="Al"
+                            oninput="checkState(${index}, '${pt}')"
+                        >
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="ox_${index}"
+                            value="${getVal('ox')}"
+                            placeholder="Окисл."
+                            oninput="checkState(${index}, '${pt}')"
+                        >
+
                     </div>
                 `;
+
+
                 groupCard.appendChild(row);
             });
+
 
             container.appendChild(groupCard);
         });
 
-        allPoints.forEach((pt, index) => checkState(index, pt));
+
+        // =========================================================
+        // ПЕРВОНАЧАЛЬНАЯ ПРОВЕРКА
+        // =========================================================
+
+        allPoints.forEach((pt, index) => {
+            checkState(index, pt);
+        });
+
+
+        // =========================================================
+        // ALERT
+        // =========================================================
 
         function showAlert(message) {
-            if (tg && tg.showAlert) tg.showAlert(message);
-            else alert(message);
+
+            if (tg && tg.showAlert) {
+                tg.showAlert(message);
+            } else {
+                alert(message);
+            }
         }
+
+
+        // =========================================================
+        // СОСТОЯНИЕ СТРОКИ
+        // =========================================================
 
         function checkState(index, ptName) {
-            const activeFields = getActiveFieldsForPoint(ptName);
+
+            const activeFields =
+                getActiveFieldsForPoint(ptName);
+
             const vals = {};
-            
-            activeFields.forEach(f => {
-                const el = document.getElementById(`${f}_${index}`);
-                vals[f] = el ? el.value.trim() : '';
-                if (ptName) localStorage.setItem(`${currentBlock}_${currentTime}_${f}_${ptName}`, vals[f]);
+
+
+            activeFields.forEach(field => {
+
+                const el =
+                    document.getElementById(`${field}_${index}`);
+
+                vals[field] =
+                    el ? el.value.trim() : '';
+
+
+                if (ptName) {
+
+                    localStorage.setItem(
+                        `${currentBlock}_${currentTime}_${field}_${ptName}`,
+                        vals[field]
+                    );
+                }
             });
 
-            const row = document.getElementById(`row_${index}`);
-            const isFilled = Object.values(vals).some(v => v !== '');
-            
-            if (isFilled) row.classList.add('filled');
-            else row.classList.remove('filled');
 
-            const hasAnyData = allPoints.some((pName, i) => {
-                const fields = getActiveFieldsForPoint(pName);
-                return fields.some(f => {
-                    const el = document.getElementById(`${f}_${i}`);
-                    return el && el.value.trim() !== '';
+            const row =
+                document.getElementById(`row_${index}`);
+
+
+            const isFilled =
+                Object.values(vals).some(
+                    value => value !== ''
+                );
+
+
+            if (isFilled) {
+                row.classList.add('filled');
+            } else {
+                row.classList.remove('filled');
+            }
+
+
+            // Проверяем, есть ли вообще введённые данные
+            const hasAnyData =
+                allPoints.some((pName, i) => {
+
+                    const fields =
+                        getActiveFieldsForPoint(pName);
+
+                    return fields.some(field => {
+
+                        const el =
+                            document.getElementById(
+                                `${field}_${i}`
+                            );
+
+                        return el &&
+                            el.value.trim() !== '';
+                    });
                 });
-            });
+
 
             if (tg) {
-                if (hasAnyData) tg.MainButton.show();
-                else tg.MainButton.hide();
+
+                if (hasAnyData) {
+                    tg.MainButton.show();
+                } else {
+                    tg.MainButton.hide();
+                }
             }
         }
+
+
+        // =========================================================
+        // ПРОВЕРКА ХЛОРА
+        // =========================================================
 
         function validateChlorine(val) {
-            if (!val) return { valid: true };
-            const str = val.replace(',', '.');
-            const regex = /^(0|[1-9]\d*)\.\d{2}$/;
+
+            if (!val) {
+                return { valid: true };
+            }
+
+
+            const str =
+                val.replace(',', '.');
+
+
+            const regex =
+                /^(0|[1-9]\d*)\.\d{2}$/;
+
+
             if (!regex.test(str)) {
-                return { valid: false, reason: "формат должен быть с двумя знаками (например: 0.22 или 1.98)" };
+
+                return {
+                    valid: false,
+                    reason:
+                        "формат должен быть с двумя знаками (например: 0.22 или 1.98)"
+                };
             }
-            const lastDigit = parseInt(str.slice(-1), 10);
+
+
+            const lastDigit =
+                parseInt(str.slice(-1), 10);
+
+
             if (lastDigit % 2 !== 0) {
-                return { valid: false, reason: "значение хлора должно быть чётным (например: 0.22 вместо 0.21)" };
+
+                return {
+                    valid: false,
+                    reason:
+                        "значение хлора должно быть чётным (например: 0.22 вместо 0.21)"
+                };
             }
-            return { valid: true };
+
+
+            return {
+                valid: true
+            };
         }
+
+
+        // =========================================================
+        // ПРОВЕРКА МУТНОСТИ
+        // =========================================================
 
         function validateTurbidity(val) {
-            if (!val) return { valid: true };
-            const str = val.replace(',', '.');
-            const regex = /^(0|[1-9]\d*)\.\d{1}$/;
-            if (!regex.test(str)) {
-                return { valid: false, reason: "формат должен быть с одним знаком после точки (например: 2.1, 0.9)" };
+
+            if (!val) {
+                return {
+                    valid: true
+                };
             }
-            return { valid: true };
+
+
+            const str =
+                val.replace(',', '.');
+
+
+            const regex =
+                /^(0|[1-9]\d*)\.\d{1}$/;
+
+
+            if (!regex.test(str)) {
+
+                return {
+                    valid: false,
+                    reason:
+                        "формат должен быть с одним знаком после точки (например: 2.1, 0.9)"
+                };
+            }
+
+
+            return {
+                valid: true
+            };
         }
 
+
+        // =========================================================
+        // ОТПРАВКА ДАННЫХ
+        // =========================================================
+
         function sendData() {
+
             const result = [];
-            const allStorageFields = ['cl', 'turb', 'ph', 'alk', 'al', 'ox'];
 
-            for (let index = 0; index < allPoints.length; index++) {
-                const pt = allPoints[index];
-                const cl = document.getElementById(`cl_${index}`)?.value.trim() || '';
-                const turb = document.getElementById(`turb_${index}`)?.value.trim() || '';
-                const ph = document.getElementById(`ph_${index}`)?.value.trim() || '';
-                const alk = document.getElementById(`alk_${index}`)?.value.trim() || '';
-                const al = document.getElementById(`al_${index}`)?.value.trim() || '';
-                const ox = document.getElementById(`ox_${index}`)?.value.trim() || '';
 
-                const showSecondary = hasSecondaryFields(pt);
-                const hasRowData = showSecondary 
-                    ? (cl || turb || ph || alk || al || ox) 
-                    : (cl || turb);
+            const allStorageFields = [
+                'cl',
+                'turb',
+                'ph',
+                'alk',
+                'al',
+                'ox'
+            ];
 
-                if (!hasRowData) continue;
 
-                const clCheck = validateChlorine(cl);
+            for (
+                let index = 0;
+                index < allPoints.length;
+                index++
+            ) {
+
+                const pt =
+                    allPoints[index];
+
+
+                const cl =
+                    document.getElementById(
+                        `cl_${index}`
+                    )?.value.trim() || '';
+
+
+                const turb =
+                    document.getElementById(
+                        `turb_${index}`
+                    )?.value.trim() || '';
+
+
+                const ph =
+                    document.getElementById(
+                        `ph_${index}`
+                    )?.value.trim() || '';
+
+
+                const alk =
+                    document.getElementById(
+                        `alk_${index}`
+                    )?.value.trim() || '';
+
+
+                const al =
+                    document.getElementById(
+                        `al_${index}`
+                    )?.value.trim() || '';
+
+
+                const ox =
+                    document.getElementById(
+                        `ox_${index}`
+                    )?.value.trim() || '';
+
+
+                const activeFields =
+                    getActiveFieldsForPoint(pt);
+
+
+                const hasRowData =
+                    activeFields.some(field => {
+
+                        const values = {
+                            cl,
+                            turb,
+                            ph,
+                            alk,
+                            al,
+                            ox
+                        };
+
+                        return values[field] !== '';
+                    });
+
+
+                if (!hasRowData) {
+                    continue;
+                }
+
+
+                // Проверка хлора
+                const clCheck =
+                    validateChlorine(cl);
+
+
                 if (!clCheck.valid) {
-                    showAlert(`Ошибка в "${pt}" (Хлор "${cl}"): ${clCheck.reason}.`);
+
+                    showAlert(
+                        `Ошибка в "${pt}" (Хлор "${cl}"): ${clCheck.reason}.`
+                    );
+
                     return;
                 }
 
-                const turbCheck = validateTurbidity(turb);
+
+                // Проверка мутности
+                const turbCheck =
+                    validateTurbidity(turb);
+
+
                 if (!turbCheck.valid) {
-                    showAlert(`Ошибка в "${pt}" (Мутность "${turb}"): ${turbCheck.reason}.`);
+
+                    showAlert(
+                        `Ошибка в "${pt}" (Мутность "${turb}"): ${turbCheck.reason}.`
+                    );
+
                     return;
                 }
 
-                const itemData = { point: pt, chlorine: cl, turbidity: turb };
-                if (showSecondary) {
+
+                // Основные показатели
+                const itemData = {
+
+                    point: pt,
+
+                    chlorine: cl,
+
+                    turbidity: turb
+                };
+
+
+                // -------------------------------------------------
+                // Передаём только те дополнительные показатели,
+                // которые разрешены для конкретной точки
+                // -------------------------------------------------
+
+                if (activeFields.includes('ph')) {
                     itemData.ph = ph;
+                }
+
+
+                if (activeFields.includes('alk')) {
                     itemData.alkalinity = alk;
+                }
+
+
+                if (activeFields.includes('al')) {
                     itemData.aluminum = al;
+                }
+
+
+                if (activeFields.includes('ox')) {
                     itemData.oxidizability = ox;
                 }
+
 
                 result.push(itemData);
             }
 
+
+            // Нет данных
             if (result.length === 0) {
-                showAlert("Заполните хотя бы одно поле перед отправкой!");
+
+                showAlert(
+                    "Заполните хотя бы одно поле перед отправкой!"
+                );
+
                 return;
             }
 
+
+            // Очистка localStorage
             allPoints.forEach(pt => {
-                allStorageFields.forEach(f => localStorage.removeItem(`${currentBlock}_${currentTime}_${f}_${pt}`));
+
+                allStorageFields.forEach(field => {
+
+                    localStorage.removeItem(
+                        `${currentBlock}_${currentTime}_${field}_${pt}`
+                    );
+                });
             });
 
+
+            // Отправка в Telegram
             if (tg) {
-                tg.sendData(JSON.stringify(result));
+
+                tg.sendData(
+                    JSON.stringify(result)
+                );
             }
         }
+
     </script>
+
 </body>
 </html>
