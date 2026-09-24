@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f3f5">
+  <title>Анализы NFS-2</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: var(--tg-theme-secondary-bg-color, #f2f3f5);
+      --card: var(--tg-theme-bg-color, #fff);
+      --text: var(--tg-theme-text-color, #16181b);
+      --hint: var(--tg-theme-hint-color, #818995);
+      --accent: var(--tg-theme-button-color, #2481cc);
+      --line: rgba(90, 100, 115, .16);
+      --ok: #31b66a;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; padding: max(14px, env(safe-area-inset-top)) 12px 28px;
+      background: var(--bg); color: var(--text);
+      font: 15px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .header { padding: 2px 6px 12px; }
+    h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: -.35px; }
+    .subtitle { margin: 0; color: var(--hint); font-size: 13px; }
+    .section-title { margin: 17px 4px 7px; color: var(--hint); font-size: 12px; font-weight: 650; text-transform: uppercase; letter-spacing: .35px; }
+    .card { overflow: hidden; border-radius: 13px; background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .row { position: relative; display: grid; gap: 9px; padding: 11px 12px; }
+    .row + .row::before { position: absolute; top: 0; right: 0; left: 12px; height: 1px; background: var(--line); content: ""; }
+    .point-name { display: flex; align-items: center; gap: 7px; min-height: 20px; font-size: 14px; font-weight: 650; }
+    .dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: transparent; }
+    .row.filled .dot { background: var(--ok); }
+    .inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .inputs.extra.fields-1 { grid-template-columns: 1fr; }
+    .inputs.extra.fields-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .inputs.extra.fields-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .inputs.extra.fields-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    input {
+      width: 100%; min-width: 0; height: 38px; padding: 7px 4px;
+      border: 1px solid transparent; border-radius: 8px; outline: 0;
+      background: var(--bg); color: var(--text); text-align: center;
+      font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1.2;
+    }
+    input:focus { border-color: var(--accent); background: color-mix(in srgb, var(--bg), var(--accent) 8%); }
+    input::placeholder { color: var(--hint); opacity: .9; font-size: 11px; }
+    .footer { margin: 12px 5px 0; color: var(--hint); font-size: 12px; }
+    @media (max-width: 350px) {
+      .inputs.extra.fields-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .inputs.extra.fields-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .row { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Анализы NFS-2</h1>
+    <p class="subtitle" id="subtitle">Загрузка параметров…</p>
+  </header>
+  <main id="table" aria-live="polite"></main>
+  <p class="footer">Заполните доступные показатели и нажмите «Сохранить и отправить».</p>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const tg = window.Telegram?.WebApp;
+      tg?.ready();
+      tg?.expand();
+
+      const params = new URLSearchParams(location.search);
+      const station = params.get("station") || "Станция-1";
+      const time = params.get("time") || "09:00";
+      const shift = params.get("shift") || "";
+      const date = params.get("date") || "";
+      const fullAnalysis = time === "09:00" || time === "21:00";
+      const label = {
+        chlorine: "Хлор (Cl)", turbidity: "Мутность", ph: "pH",
+        alkalinity: "Щёлочь", aluminum: "Al", oxidizability: "Окисл."
+      };
+      const pointsByStation = {
+        "Станция-1": [
+          ...Array.from({ length: 12 }, (_, i) => `Насос ${i + 1}`),
+          "Общий коллектор 1", "Общий коллектор 2", "Камера 1", "Камера 2",
+          "Смеситель 1", "Смеситель 2",
+          ...Array.from({ length: 10 }, (_, i) => `Фильтр ${i + 1}`)
+        ],
+        "Станция-2": [
+          "Камера А", "Камера Б", "Исходная вода",
+          "КОВ (канал осветлённой воды)", "КЧВ (канал чистой воды)",
+          "КФВ (канал фильтрованной воды)"
+        ]
+      };
+
+      // The bot passes the official station point list in the `points` URL parameter.
+      // The local list is a fallback so the page can also be previewed directly.
+      let points = pointsByStation[station] || pointsByStation["Станция-1"];
+      try {
+        const fromBot = JSON.parse(params.get("points") || "null");
+        if (Array.isArray(fromBot) && fromBot.length && fromBot.every(p => typeof p === "string")) points = fromBot;
+      } catch (_) { /* Use the built-in NFS-2 point list. */ }
+
+      document.getElementById("subtitle").textContent =
+        `${station}${shift ? ` · ${shift}` : ""}${date ? ` · ${date}` : ""} · ${time}`;
+
+      const groups = station === "Станция-1" ? [
+        { title: "Насосы", points: points.filter(p => /^Насос\s+\d+$/i.test(p)) },
+        { title: "Камеры, коллекторы и смесители", points: points.filter(p => !/^Насос\s+\d+$/i.test(p) && !/^Фильтр\s+\d+$/i.test(p)) },
+        { title: "Фильтры", points: points.filter(p => /^Фильтр\s+\d+$/i.test(p)) }
+      ] : [{ title: "Точки анализа", points }];
+
+      const isPump = p => /^Насос\s+\d+$/i.test(p);
+      const isCamera = p => /^Камера\s+(1|2|А|Б)$/i.test(p);
+      const isFilter = p => /^Фильтр\s+\d+$/i.test(p);
+      const noPh = p => p === "Камера 1" || p === "Камера 2" || /^Общий коллектор\s+[12]$/i.test(p) || isFilter(p);
+      const noAlk = p => p === "КФВ (канал фильтрованной воды)" || /^Общий коллектор\s+[12]$/i.test(p);
+      const hasAl = p => isPump(p) || p === "КЧВ (канал чистой воды)";
+      const hasOx = p => isPump(p) || isCamera(p) || p === "Исходная вода";
+
+      function activeFields(point) {
+        const fields = ["chlorine", "turbidity"];
+        if (!fullAnalysis) return fields;
+        if (!noPh(point)) fields.push("ph");
+        if (!noAlk(point)) fields.push("alkalinity");
+        if (hasAl(point)) fields.push("aluminum");
+        if (hasOx(point)) fields.push("oxidizability");
+        return fields;
+      }
+
+      const storagePrefix = ["nfs2", station, shift, date, time].join("|");
+      const storageKey = (point, field) => `${storagePrefix}|${point}|${field}`;
+      const table = document.getElementById("table");
+      const inputsByPoint = new Map();
+
+      function readSaved(point, field) {
+        try { return localStorage.getItem(storageKey(point, field)) || ""; }
+        catch (_) { return ""; }
+      }
+      function saveValue(point, field, value) {
+        try {
+          if (value) localStorage.setItem(storageKey(point, field), value);
+          else localStorage.removeItem(storageKey(point, field));
+        } catch (_) { /* The form remains usable when storage is unavailable. */ }
+      }
+      function updateMainButton() {
+        const hasAny = [...inputsByPoint.values()].some(map => [...map.values()].some(input => input.value.trim()));
+        if (!tg) return;
+        tg.MainButton.setText("СОХРАНИТЬ И ОТПРАВИТЬ");
+        if (hasAny) tg.MainButton.show(); else tg.MainButton.hide();
+      }
+
+      function addPoint(groupCard, point) {
+        const row = document.createElement("section");
+        row.className = "row";
+        const name = document.createElement("div");
+        name.className = "point-name";
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        const title = document.createElement("span");
+        title.textContent = point;
+        name.append(dot, title);
+        row.appendChild(name);
+
+        const active = activeFields(point);
+        const pointInputs = new Map();
+        inputsByPoint.set(point, pointInputs);
+        const primary = document.createElement("div");
+        primary.className = "inputs";
+        const extra = document.createElement("div");
+        const additional = active.filter(field => field !== "chlorine" && field !== "turbidity");
+        extra.className = `inputs extra fields-${Math.max(1, Math.min(4, additional.length))}`;
+
+        for (const field of active) {
+          const input = document.createElement("input");
+          input.type = "text";
+          input.inputMode = "decimal";
+          input.autocomplete = "off";
+          input.setAttribute("aria-label", `${point}: ${label[field]}`);
+          input.placeholder = label[field];
+          input.value = readSaved(point, field);
+          input.addEventListener("input", () => {
+            saveValue(point, field, input.value.trim());
+            row.classList.toggle("filled", [...pointInputs.values()].some(el => el.value.trim()));
+            updateMainButton();
+          });
+          pointInputs.set(field, input);
+          (field === "chlorine" || field === "turbidity" ? primary : extra).appendChild(input);
+        }
+        row.classList.toggle("filled", [...pointInputs.values()].some(el => el.value.trim()));
+        row.appendChild(primary);
+        if (additional.length) row.appendChild(extra);
+        groupCard.appendChild(row);
+      }
+
+      for (const group of groups) {
+        if (!group.points.length) continue;
+        const heading = document.createElement("h2");
+        heading.className = "section-title";
+        heading.textContent = group.title;
+        table.appendChild(heading);
+        const card = document.createElement("div");
+        card.className = "card";
+        for (const point of group.points) addPoint(card, point);
+        table.appendChild(card);
+      }
+
+      function alertUser(text) {
+        if (tg?.showAlert) tg.showAlert(text);
+        else window.alert(text);
+      }
+      function validateDecimal(value, digits, evenHundredths = false) {
+        if (!value) return null;
+        const normalized = value.replace(",", ".");
+        const re = digits === 2 ? /^(0|[1-9]\d*)\.\d{2}$/ : /^(0|[1-9]\d*)\.\d$/;
+        if (!re.test(normalized)) return `Введите число с ${digits === 2 ? "двумя" : "одним"} знаками после точки.`;
+        if (evenHundredths && Number(normalized.slice(-1)) % 2 !== 0) return "Последняя цифра значения хлора должна быть чётной.";
+        return null;
+      }
+
+      function sendData() {
+        const result = [];
+        for (const [point, pointInputs] of inputsByPoint) {
+          const values = Object.fromEntries([...pointInputs].map(([field, input]) => [field, input.value.trim()]));
+          if (!Object.values(values).some(Boolean)) continue;
+          const chlorineError = validateDecimal(values.chlorine, 2, true);
+          if (chlorineError) return alertUser(`${point} · хлор: ${chlorineError}`);
+          const turbidityError = validateDecimal(values.turbidity, 1);
+          if (turbidityError) return alertUser(`${point} · мутность: ${turbidityError}`);
+          const item = { point, chlorine: values.chlorine || "", turbidity: values.turbidity || "" };
+          if ("ph" in values) item.ph = values.ph;
+          if ("alkalinity" in values) item.alkalinity = values.alkalinity;
+          if ("aluminum" in values) item.aluminum = values.aluminum;
+          if ("oxidizability" in values) item.oxidizability = values.oxidizability;
+          result.push(item);
+        }
+        if (!result.length) return alertUser("Заполните хотя бы одно поле перед отправкой.");
+        if (!tg?.sendData) return alertUser("Откройте форму через Telegram, чтобы отправить данные боту.");
+        for (const [point, pointInputs] of inputsByPoint) {
+          for (const field of pointInputs.keys()) {
+            try { localStorage.removeItem(storageKey(point, field)); } catch (_) { /* Ignore unavailable storage. */ }
+          }
+        }
+        tg.sendData(JSON.stringify(result));
+      }
+
+      tg?.MainButton.onClick(sendData);
+      updateMainButton();
+    })();
+  </script>
+</body>
+</html>
