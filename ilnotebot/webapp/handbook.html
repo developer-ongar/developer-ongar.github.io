@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>НФС3.LAB — Методики и Справочник</title>
+  <link rel="stylesheet" href="handbook.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+    <div class="brand"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3C12 3 5.5 10.5 5.5 15a6.5 6.5 0 0 0 13 0C18.5 10.5 12 3 12 3Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 15a3 3 0 0 0 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>НФС-3 · LAB</div>
+    <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Включить тёмную тему" aria-pressed="false">Тёмная тема</button>
+    </div>
+    <h1>Справочник</h1>
+    <p>Всё для работы лаборанта. В одном месте.</p>
+  </header>
+
+  <div class="navigation">
+  <!-- Разделы справочника -->
+  <nav class="main-tabs" aria-label="Разделы справочника">
+    <button class="main-tab active" aria-pressed="true" onclick="switchMainTab('analyses', this)">Анализы</button>
+    <button class="main-tab" aria-pressed="false" onclick="switchMainTab('scheme', this)">Схема</button>
+    <button class="main-tab" aria-pressed="false" onclick="switchMainTab('terms', this)">Справочно</button>
+    <button class="main-tab" aria-pressed="false" onclick="switchMainTab('station', this)">Станция</button>
+    <button class="main-tab" aria-pressed="false" onclick="switchMainTab('control', this)">Контроль</button>
+    <button class="main-tab" aria-pressed="false" onclick="switchMainTab('note', this)">Записка</button>
+  </nav>
+
+  <!-- Поиск -->
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <input type="search" aria-label="Поиск по справочнику" id="searchInput" placeholder="Найти методику или показатель" oninput="filterContent()">
+  </div>
+
+  </div>
+  <div class="section-heading">
+    <div><h2 id="sectionTitle">Методики анализов</h2><p id="sectionDescription">Порядок определений, формулы и разбавления</p></div>
+    <button type="button" class="text-button" onclick="collapseCards()">Свернуть всё</button>
+  </div>
+  <!-- РАЗДЕЛ 1: АНАЛИЗЫ -->
+  <div id="tab-analyses" class="tab-content active">
+    
+    <div class="chip-list">
+      <button class="chip active" onclick="filterAnalysisCategory('all', this)">Все</button>
+      <button class="chip" onclick="filterAnalysisCategory('хлор', this)">Хлор</button>
+      <button class="chip" onclick="filterAnalysisCategory('щелочность', this)">Щелочность/рН</button>
+      <button class="chip" onclick="filterAnalysisCategory('по', this)">Окисляемость/Al</button>
+      <button class="chip" onclick="filterAnalysisCategory('жесткость', this)">Жесткость</button>
+      <button class="chip" onclick="filterAnalysisCategory('хлориды', this)">Хлориды</button>
+      <button class="chip" onclick="filterAnalysisCategory('другие', this)">Другие</button>
+    </div>
+
+    <div class="card analysis-card" data-category="хлор" data-keywords="фосфатно буферный дпд диэтилпарафенилендиамин соль мора">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Определение хлора (Метод Пейлина)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>Наливаем в плоскодонную колбу 5 мл раствора Фосфатно-Буферного и ДиэтилПарафениленДиамина (ДПД).</li>
+          <li>Затем наливаем 100 мл испытуемой воды (пробу).</li>
+          <li>Титруем через Соль Мора (Стандартный раствор железа (II)).</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="хлор" data-keywords="активный хлор калий йодистый тиосульфат крахмал титрование">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Определение хлора (Йодометрический метод)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>В коническую колбу насыпать 0,5 гр KI (калий йодистый).</li>
+          <li>Добавляем 1–2 мл дистиллированной воды.</li>
+          <li>Добавляем 2,3–6,0 мл буферного раствора (в зависимости от щелочности).</li>
+          <li>Наливаем 100 мл испытуемой воды (пробу).</li>
+          <li>Добавляем 1 мл Крахмала.</li>
+          <li>Титруем 0,01н Натрий серноватистокислым (тиосульфатом) до исчезновения синей окраски.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Формула расчета:</strong>
+          (nT × 0.354 × 1000) / nML
+          <div style="font-size: 11px; margin-top: 4px; color: #555;">
+            nT — количество мл титра | nML — количество мл пробы
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="хлор" data-keywords="щелочность метиловый оранжевый соляная кислота">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Анализ хлора (Метилоранжевый метод)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>В колбу наливаем 100 мл пробы.</li>
+          <li>Добавляем 2–4 капли 5н соляной кислоты (в зависимости от рН).</li>
+          <li>Титруем раствором метилового оранжевого до появления розовой окраски.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Формула расчета:</strong>
+          (0,04 + (V × 0,0217)) × 1000 / 100
+        </div>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="щелочность" data-keywords="точки отбора ph щелочность уфо кфв рчв">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Точки контроля рН и Щелочности</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ul style="padding-left: 18px; font-size: 13px; line-height: 1.6; margin-top: 6px;">
+          <li><strong>Только рН:</strong> Насос, УФО, КФВ (Общий коллектор фильтров).</li>
+          <li><strong>рН и Щелочность:</strong> РЧВ (КЧВ), Общий коллектор отстойников, исходная вода, после смесителя, после оборотной воды.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="по" data-keywords="перманганатная окисляемость по марганцовка серная кислота щавелевая">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Окисляемость (Метод Кубеля)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>Наливаем 100 мл пробы (Из Насосной, после смесителя, исходная вода).</li>
+          <li>Добавляем 5 мл серной кислоты (1:2) пипеткой.</li>
+          <li>Добавляем 10 мл 0,01Н KMnO₄ пипеткой Мора.</li>
+          <li>Кипятим на медленном нагреве точно 10 минут после закипания.</li>
+          <li>Добавляем 10 мл 0,01Н щавелевой кислоты (пипеткой Мора).</li>
+          <li>Титруем KMnO₄ из пипетки на 5 мл до слабо-розового оттенка.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Формула расчета:</strong>
+          (k × 0.08 × 1000 × nT) / nML
+        </div>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="по" data-keywords="поправка коэффициент kmno4 марганцовка">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Поправка коэффициента KMnO₄</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>100 мл дистиллированной воды + 5 мл серной кислоты (1:2).</li>
+          <li>Добавить 10 мл щавелевой кислоты (пипеткой Мора).</li>
+          <li>Нагреть до закипания и оттитровать раствором KMnO₄.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Расчет k:</strong> 10 / nML
+        </div>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="по" data-keywords="алюминий аскорбинка кфк шкала цветности">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Определение остаточного Al</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>В колбы наливаем по 25 мл пробы (Насос, оборотная вода 35/70).</li>
+          <li>В 4-ю колбу — 25 мл подкислительной контрольной воды.</li>
+          <li>Добавляем 2–3 капли HCl, ждем 10 мин и проверяем рН по шкале.</li>
+          <li>Добавляем 25 мл реакционной смеси и 0,3 г аскорбиновой кислоты. Ждем 20 мин.</li>
+          <li>Измеряем на КФК (кювета 30 мм).</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="жесткость" data-keywords="жесткость трилон б хром темнокислотный буфер">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Общая жесткость воды</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>50 мл пробы + 2,5 мл буферного раствора.</li>
+          <li>Добавить 3 капли индикатора хрома темно-синего.</li>
+          <li>Титровать 0,05Н Трилоном Б от фиолетового к синему цвету.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="хлориды" data-keywords="хлориды серебро азотнокислое калий хромокислый">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Определение Хлоридов</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>20 мл пробы + 0,2 мл калия хромокислого.</li>
+          <li>Титровать AgNO₃ (серебро азотнокислое) до кирпичного цвета.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Формула:</strong> (k × 0.5 × 1000 × nT) / nML
+        </div>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="хлориды" data-keywords="поправка agno3 серебро натрий хлористый">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Поправка коэффициента AgNO₃</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>90 мл дист. воды + 10 мл NaCl (натрий хлористый) + 1 мл калия хромокислого.</li>
+          <li>Оттитровать раствором AgNO₃.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Расчет:</strong> 10 / потраченные мл AgNO₃
+        </div>
+      </div>
+    </div>
+
+    <div class="card analysis-card" data-category="другие" data-keywords="гпхн лимонная кислота гипохлорит натрия">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Анализ ГПХН</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ol class="steps">
+          <li>50 мл дист. воды + 1 г калия йодистого + 10 г лимонной кислоты + 5 мл пробы.</li>
+          <li>Титровать 0,1Н тиосульфатом натрия до обесцвечивания.</li>
+        </ol>
+        <div class="formula-box">
+          <strong>Формула:</strong> (nT × k × 1000) / nML
+          <br><small>Перевод в %: разделить полученный ответ на 10 000</small>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-category="жесткость" data-keywords="разбавление жесткости кратность дистиллированная">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Разбавление проб для Жесткости</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <table class="dilution-table">
+          <thead>
+            <tr><th>Кратность</th><th>Исп. вода</th><th>Дист. вода</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>В 2 раз</td><td>25 мл</td><td>25 мл</td></tr>
+            <tr><td>В 5 раз</td><td>10 мл</td><td>40 мл</td></tr>
+            <tr><td>В 10 раз</td><td>5 мл</td><td>45 мл</td></tr>
+            <tr><td>В 15 раз</td><td>3,5 мл</td><td>46,5 мл</td></tr>
+            <tr><td>В 20 раз</td><td>2,5 мл</td><td>47,5 мл</td></tr>
+            <tr><td>В 25 раз</td><td>2 мл</td><td>48 мл</td></tr>
+            <tr><td>В 50 раз</td><td>1 мл</td><td>49 мл</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    
+<div class="card" data-category="хлориды" data-keywords="разбавление хлоридов дистиллированная">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Разбавление проб для Хлоридов</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <table class="dilution-table">
+          <thead>
+            <tr><th>Кратность</th><th>Исп. вода</th><th>Дист. вода</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>В 2 раз</td><td>10 мл</td><td>10 мл</td></tr>
+            <tr><td>В 5 раз</td><td>4 мл</td><td>16 мл</td></tr>
+            <tr><td>В 10 раз</td><td>2 мл</td><td>18 мл</td></tr>
+            <tr><td>В 20 раз</td><td>1 мл</td><td>19 мл</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- РАЗДЕЛ 2: ТЕХНОЛОГИЧЕСКАЯ СХЕМА (ПОЛНОЕ СООТВЕТСТВИЕ СХЕМЕ) -->
+  <div id="tab-scheme" class="tab-content">
+    
+    
+<div class="card" data-keywords="исходная вода вячеславка нфс3 оборотная вода">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">1. Исходная вода & Оборотные воды</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Вода поступает из водохранилища <strong>Вячеславка</strong> в Насосно-фильтровальную станцию №3 (НФС-3).</p>
+          <span class="badge badge-info">🔄 Оборотная вода 1</span>
+          <span class="badge badge-info">🔄 Оборотная вода 2</span>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Вода, использованная при промывке, возвращается обратно в систему для повторного цикла очистки.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="общий смеситель первичный хлор коагулянт флокулянт ввод">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">2. Общий смеситель & Первичное хлорирование</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">В общем смесителе происходит интенсивное смешивание исходной воды с химическими реагентами.</p>
+          <span class="badge badge-reagent">🧪 Первичное хлорирование</span>
+          <span class="badge badge-reagent">🧪 Коагулянт и Флокулянт</span>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="отстойник 6 штук осаждение хлопья">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">3. Отстойники (по 6 в каждом БВО)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Вода из смесителя поступает в <strong>6 отстойников каждого блока</strong>. Вода из смесителя отстаивается, чтобы осадок мог осесть на дно.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="общий коллектор отстойника сбор воды">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">4. Общий коллектор отстойников</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Осветленная вода со всех 6 отстойников собирается в едином коллекторе отстойников для распределения по фильтрам.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="фильтра бво-35 бво-70 8 12 штук песок">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">5. Фильтры (8 / 12 шт)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Фильтрация через кварцевый песок. В БВО-1 — 12 фильтров, в БВО-2 — 8; дренажная система «Леопольд».</p>
+          <span class="badge badge-info">🔹 8 шт в БВО-35</span>
+          <span class="badge badge-info">🔹 12 шт в БВО-70</span>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="общий коллектор фильтра кфв вторичное хлорирование">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">6. Общий коллектор фильтров (КФВ) & Вторичное хлорирование</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Отфильтрованная вода собирается в коллекторе КФВ, где осуществляется ввод реагента для дезинфекции.</p>
+          <span class="badge badge-reagent">🧪 Вторичное хлорирование</span>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="рчв кчв резервуар чистой воды">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">7. РЧВ (КЧВ)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">После вторичного хлорирования обработанная вода поступает в Резервуар Чистой Воды (РЧВ / КЧВ) для накопления и выдержки времени контакта с хлором.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="насосы 6 шт насосная станция">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">8. Насосы (6 шт)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Вода из РЧВ забирается <strong>6 насосами</strong> и под давлением перекачивается к блоку обеззараживания.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="уфо ультрафиолет бактерии обеззараживание">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">9. УФО (Ультрафиолетовое облучение)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Финишная бактерицидная обработка. После насосной станции вода проходит УФ-обеззараживание перед подачей в распределительную сеть.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="город астана интер учхоз потребители">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Распределение: Город Астана / Интер (Учхоз)</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="scheme-step">
+          <p style="font-size: 13px;">Подготовленная питьевая вода подается потребителям по двум магистральным направлениям:</p>
+          <span class="badge badge-out">🏢 Город Астана</span>
+          <span class="badge badge-out">🏡 Интер (Учхоз)</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- РАЗДЕЛ 3: ТЕРМИНЫ И ГОСТы -->
+  <div id="tab-terms" class="tab-content">
+    <p class="section-note">Таблицы и перечень ГОСТов перенесены из прежнего справочника. Для оценки результатов используйте утверждённую рабочую программу лаборатории.</p>
+
+    
+<div class="card" data-keywords="коагулянт флокулянт уголь пдк оксихлорид алюминия праестол">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Термины и Реагенты</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <div class="term-item">
+          <strong>Коагулянт (Al₂(OH)₅Cl — Оксихлорид алюминия)</strong>
+          <p>Вещество для удаления мутности и загрязнений. Связывает мелкие частицы в крупные сгустки (флокулы).</p>
+        </div>
+        <div class="term-item">
+          <strong>Флокулянт (Праестол-650)</strong>
+          <p>Укрепляет хлопья коагулянта за счет удлинения их молекулярных цепочек. Поставляется в мешках по 25 кг.</p>
+        </div>
+        <div class="term-item">
+          <strong>Активированный уголь</strong>
+          <p>Удаляет привкусы и запахи. Рабочая доза: 1–20 мг/л.</p>
+        </div>
+        <div class="term-item">
+          <strong>ПДК</strong>
+          <p>Предельно Допустимая Концентрация веществ в питьевой воде.</p>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="показатели пдк норма цветность мутность хлор жесткость железо рн">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Нормативы из прежнего справочника</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <table class="dilution-table">
+          <thead>
+            <tr><th>Показатель</th><th>ПДК / Норма</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Вкус и привкус</td><td>2 балла</td></tr>
+            <tr><td>Запах</td><td>2 балла</td></tr>
+            <tr><td>Цветность</td><td>20 град.</td></tr>
+            <tr><td>Мутность</td><td>1,5 мг/л</td></tr>
+            <tr><td>Остаточный свободный хлор</td><td>0,3–0,5 мг/л</td></tr>
+            <tr><td>Остаточный связанный хлор</td><td>0,8–1,2 мг/л</td></tr>
+            <tr><td>Водородный показатель (рН)</td><td>6,0–9,0 ед.</td></tr>
+            <tr><td>Окисляемость перманганатная</td><td>5,0 мг/л</td></tr>
+            <tr><td>Железо</td><td>0,3 мг/л</td></tr>
+            <tr><td>Общая жесткость</td><td>7,0 мг-экв/л</td></tr>
+            <tr><td>Хлориды</td><td>350 мг/л</td></tr>
+            <tr><td>Сульфаты</td><td>500 мг/л</td></tr>
+            <tr><td>Сухой остаток</td><td>1000 мг/л</td></tr>
+            <tr><td>Алюминий</td><td>0,5 мг/л</td></tr>
+            <tr><td>Марганец</td><td>0,1 мг/л</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    
+<div class="card" data-keywords="гост стандарты вячеславка пейлин отбор проб">
+      <button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Стандарты и ГОСТы</span><span class="icon" aria-hidden="true"></span></button>
+      <div class="card-body">
+        <ul style="padding-left: 18px; font-size: 13px; line-height: 1.6; margin-top: 8px;">
+          <li><strong>ГОСТ 2874-82:</strong> Вода питьевая.</li>
+          <li><strong>ГОСТ 2761-82:</strong> Источники водоснабжения (Вячеславка).</li>
+          <li><strong>ГОСТ 3351-74:</strong> Запах, цвет, мутность.</li>
+          <li><strong>ГОСТ 26449.2-85:</strong> Окисляемость.</li>
+          <li><strong>ГОСТ 26449.1-85:</strong> рН и Щелочность.</li>
+          <li><strong>ГОСТ 18190-72:</strong> Хлор (Метод Пейлина).</li>
+          <li><strong>ГОСТ 18165-89:</strong> Алюминий.</li>
+          <li><strong>ГОСТ 4245-72:</strong> Хлориды.</li>
+          <li><strong>ГОСТ 31862 / 51592 / 51593:</strong> Отбор проб.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+
+<section id="tab-station" class="tab-content" aria-label="Станция"><p class="reading-text">Данные из пояснительной записки НФС-3. Составила инженер-технолог Әлкебаева А.Ж.</p>
+<div class="card" data-keywords="мощность производительность 105000 70000 35000 водохранилище 2024"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">НФС-3 и её производительность</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><p class="reading-text">Проектная производительность станции — <strong>105 000 м³/сут</strong>. БВО-1 — 70 000 м³/сут, БВО-2 — 35 000 м³/сут. Оба блока введены в эксплуатацию в 2024 году.</p><p class="reading-text">Исходная вода поступает из Астанинского водохранилища по двум водоводам диаметром 1200 мм; к блокам — по трубам диаметром 1000 мм.</p></div></div>
+<div class="card" data-keywords="бво 1 2 сравнение смесители хлопьеобразование отстойники фильтры леопольд песок"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Сравнение БВО-1 и БВО-2</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><div class="table-scroll"><table class="dilution-table"><thead><tr><th scope="col">Сооружение / параметр</th><th scope="col">БВО-1</th><th scope="col">БВО-2</th></tr></thead><tbody><tr><td>Производительность, м³/сут</td><td>70 000</td><td>35 000</td></tr><tr><td>Смесители, шт.</td><td>2</td><td>2</td></tr><tr><td>Объём смесителя, м³</td><td>31,4</td><td>16,1</td></tr><tr><td>Пребывание в смесителе, мин</td><td>1,25</td><td>1,29</td></tr><tr><td>Камеры хлопьеобразования, шт.</td><td>6</td><td>6</td></tr><tr><td>Объём камеры, м³</td><td>78,1</td><td>39,1</td></tr><tr><td>Пребывание в камере, мин</td><td>9,36</td><td>9,37</td></tr><tr><td>Отстойники, шт.</td><td>6</td><td>6</td></tr><tr><td>Площадь отстойника, м²</td><td>168</td><td>84</td></tr><tr><td>Скорые фильтры, шт.</td><td>12</td><td>8</td></tr><tr><td>Площадь одного фильтра, м²</td><td>42</td><td>30</td></tr><tr><td>Высота фильтра, м</td><td>4,7</td><td>4,7</td></tr></tbody></table></div><p class="reading-text">В обоих блоках: тонкослойные модули отстойников, кварцевый песок с зерном 0,7–1,6 мм, дренаж «Леопольд», водовоздушная промывка.</p></div></div>
+<div class="card" data-keywords="рчв кчв резервуар насосы уфо"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Резервуары и насосная станция</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><p class="reading-text">Два резервуара чистой воды по <strong>20 000 м³</strong>. Насосная станция второго подъёма: 6 хозяйственно-питьевых насосов и 3 промывных насоса. После насосной станции предусмотрено УФ-обеззараживание.</p></div></div>
+<div class="card" data-keywords="оборотная промывная песколовка осадок декантер илоуплотнитель котельная"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Оборотная вода и осадок</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><p class="reading-text">Два резервуара сбора промывных вод со встроенными песколовками — по <strong>420 м³</strong>. Промывная вода возвращается в смесители БВО-1 и БВО-2 для повторной очистки. Осадок из резервуаров с песколовками направляется в канализацию самотёком.</p><p class="reading-text">Цех уплотнения и обезвоживания: 2 илоуплотнителя, 2 декантера и 2 аварийных накопителя осадка. В состав станции также входят аварийный резервуар переливных вод, блок вспомогательных помещений и котельная.</p></div></div>
+<div class="card" data-keywords="оха оксихлорид алюминия коагулянт флокулянт престол гпхн гипохлорит соль электролиз"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Реагенты станции</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><p class="reading-text"><strong>Оксихлорид алюминия (ОХА)</strong> — коагулянт для дестабилизации мелких коллоидных и взвешенных частиц. Жидкий реагент разбавляется в баке мокрого хранения и насосами-дозаторами подаётся в смесители обоих блоков.</p><p class="reading-text"><strong>«Престол-650»</strong> — флокулянт для укрупнения хлопьев; поступает в мешках по 25 кг, растворяется в специальном баке с мешалкой.</p><p class="reading-text"><strong>Гипохлорит натрия (ГПХН)</strong> применяется для обеззараживания. Приготовление из поваренной соли и дозирование осуществляются на электролизных установках «ProMinnet».</p></div></div></section>
+
+<section id="tab-control" class="tab-content" aria-label="Производственный контроль"><p class="reading-text">Точки и периодичность ниже описаны в пояснительной записке. Рабочая программа лаборатории определяет фактический план отбора.</p>
+<div class="card" data-keywords="точки отбора исходная смеситель оборотная коллектор фильтр кфв кчв насос уфо"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Контроль на этапах очистки</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><ol class="steps"><li>Исходная вода — при поступлении на очистные сооружения.</li><li>Смесители — контроль вводимого хлора, коагулянта и флокулянта.</li><li>Оборотная вода — во время промывки.</li><li>Общий коллектор канала осветлённой воды после отстойников.</li><li>Фильтры и канал фильтрованной воды (КФВ).</li><li>Канал чистой воды (КЧВ) — контроль дозы вторичного хлора.</li><li>Насосы второго подъёма.</li><li>УФО — перед поступлением в распределительные сети города.</li></ol></div></div>
+<div class="card" data-keywords="час периодичность хлор мутность алюминий ph щелочность температура цветность"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Периодичность контроля из записки</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><div class="table-scroll"><table class="dilution-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Периодичность / назначение</th></tr></thead><tbody><tr><td>Остаточный хлор</td><td>Каждый час перед подачей в распределительную сеть</td></tr><tr><td>Мутность</td><td>Каждые два часа перед подачей в распределительную сеть</td></tr><tr><td>Остаточный алюминий</td><td>Ежедневно перед подачей в распределительную сеть</td></tr><tr><td>Температура, pH, щёлочность</td><td>Для контроля условий обработки воды</td></tr></tbody></table></div><p class="reading-text">Мутность, цветность и остаточный хлор относятся к быстро меняющимся показателям. Результаты передаются начальнику смены и заносятся в журналы.</p></div></div>
+<div class="card" data-keywords="оха 1 2 гпхн соль вода анализ определения al2o3 железо основность плотность"><button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Отдельные анализы ОХА, ГПХН, соли и воды</span><span class="icon" aria-hidden="true"></span></button><div class="card-body"><p class="reading-text">В боте эти образцы заполняются отдельно от БВО и точек отбора воды.</p><div class="table-scroll"><table class="dilution-table"><thead><tr><th scope="col">Образец</th><th scope="col">Определения</th></tr></thead><tbody><tr><td>ОХА 1 и ОХА 2</td><td>Массовая доля основного вещества (Al₂O₃), железа и хлоридов; основность; плотность; pH</td></tr><tr><td>ГПХН</td><td>Активность хлора</td></tr><tr><td>Пищевая соль</td><td>Массовая доля хлор-иона</td></tr><tr><td>Вода</td><td>Содержание остаточного активного хлора</td></tr></tbody></table></div><p class="reading-text">Дополнительный анализ имеет свою дату и время и отдельный PDF. Сначала лаборант проверяет документ, затем подтверждает отправку руководству.</p></div></div></section>
+
+<section id="tab-note" class="tab-content" aria-label="Подробная пояснительная записка">
+<p class="section-note">Подробный текст пояснительной записки НФС-3. Сохранены характеристики, единицы измерения и последовательность операций источника. Разделы раскрываются нажатием; поиск работает по полному тексту.</p>
+<div class="card source-card" data-keywords="мощность состав станция">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Состав и проектная мощность станции</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Насосно – фильтровальная станция №3.</p>
+<p class="reading-text">В состав насосно-фильтровальной станции входят:</p>
+<ul class="steps">
+<li>блок водоочистки БВО №1 - введен в эксплуатацию в 2024 году, производительность блока №1 70 000 м3 /сут;</li>
+<li>блок водоочистки БВО №2 - введен в эксплуатацию в 2024 году, производительность блока №2 35 000 м3 /сут;</li>
+<li>резервуары чистой воды – 2 шт. по 20 тысяч м3;</li>
+<li>насосная станция 2-го подъема;</li>
+<li>УФ-обеззараживание для подачи воды в распределительные сети города.</li>
+<li>Песколовки со встроенными резервуарами №7, №8 – 2 шт. с объемом 420 м3;</li>
+<li>Аварийный резервуар (усреднитель) переливных вод – 1 шт. с объемом 2100 м3;</li>
+<li>Блок вспомогательных помещений;</li>
+<li>Цех механического обезвоживания с илоуплотнителями;</li>
+<li>Котельная.</li>
+</ul>
+<p class="reading-text">Проектная мощность (производительность) водоочистных сооружений составляет 105 000 м3 /сут. (Блок №1 – 70 000 м3 /сут, блок №2 – 35 000 м3 /сут).</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="сооружения блок реагентное хозяйство электролиз песковой бункер">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Сооружения БВО-1 и БВО-2</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">В состав сооружений блока №1 входят:</p>
+<p class="reading-text">Смеситель – 2 шт;</p>
+<p class="reading-text">Камера хлопьеобразования, встроенная в горизонтальные отстойники – 6 шт;</p>
+<p class="reading-text">Блок горизонтальных отстойников с тонкослойными модулями -  «ламинарный поток» – 6 шт;</p>
+<p class="reading-text">Блок скорых фильтров с дренажной системой «Леопольд» - 12 шт;</p>
+<p class="reading-text">Реагентное хозяйство;</p>
+<p class="reading-text">Электролизный цех.</p>
+<p class="reading-text">В состав сооружений блока №2 входят:</p>
+<p class="reading-text">Смеситель – 2 шт;</p>
+<p class="reading-text">Камера   хлопьеобразования встроенная в горизонтальные отстойники – 6 шт;</p>
+<p class="reading-text">Блок горизонтальных отстойников с тонкослойными модулями -  «ламинарный поток» – 6 шт;</p>
+<p class="reading-text">Блок скорых фильтров с дренажной системой «Леопольд» - 8 шт;</p>
+<p class="reading-text">Реагентное хозяйство;</p>
+<p class="reading-text">Электролизный цех;</p>
+<p class="reading-text">Песковой бункер.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="рчв насосная 54х78 1610 1210">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Резервуары чистой воды и насосная станция</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="source-note">В исходнике производительность насосов указана в м³ без периода времени; здесь единицы сохранены.</p>
+<p class="reading-text">Резервуары чистой воды</p>
+<p class="reading-text">Резервуар для воды с емкостью 20000 м3 имеет размеры в плане 54х78 м, высоту до низа балки перекрытия 5,04 м.</p>
+<p class="reading-text">В состав насосной станции 2-го подъема входит:</p>
+<p class="reading-text">Хозяйственно-питьевая группа насосов – 6 шт, производительностью 1610 м3;</p>
+<p class="reading-text">Промывная группа насосов – 3 шт, производительностью 1210 м3.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="уфо ультрафиолет обеззараживание">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Ультрафиолетовая станция</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Ультрафиолетовая станция</p>
+<p class="reading-text">Ультрафиолетовая (УФ) обработка воды — это один из наиболее эффективных методов обеззараживания и очистки воды от микроорганизмов, бактерий, вирусов и других патогенных микроорганизмов.</p>
+<p class="reading-text">Этот метод широко применяется как в питьевом водоснабжении, так и в очистке сточных вод.</p>
+<p class="reading-text">Преимущества ультрафиолетовой очистки:</p>
+<p class="reading-text">Высокая эффективность: Ультрафиолетовая обработка уничтожает до 99,99% всех патогенов, включая бактерии, вирусы и простейшие.</p>
+<p class="reading-text">Безопасность: Это физический процесс очистки, не требующий использования химических реагентов, что исключает возможность образования токсичных побочных продуктов.</p>
+<p class="reading-text">Экологичность: УФ-обработка не оставляет в воде никаких химических следов, не изменяет её вкус и запах.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="оборотная промывная песколовки илоуплотнитель декантер осадок">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Оборотная вода и обезвоживание осадка</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Для повторного использования воды применяется оборотная система водоснабжения, включающая в себя следующие сооружения:</p>
+<ul class="steps">
+<li>два резервуара сбора промывных вод объемом 420 м3 каждый со встроенными песколовками (сбор промывных вод с блока ФС №1 и блока ФС №2).</li>
+</ul>
+<p class="reading-text">В резервуары с песколовкой промывных вод поступают промывные воды от промывки скорых фильтров блока №1 и №2. Вода с резервуаров с песколовкой промывных вод направляется в «голову» основных сооружений (смесители) блока №1 и №2 для повторной очистки. Осадок направляется в канализацию самотёком.</p>
+<p class="reading-text">Цех по уплотнению и обезвоживанию осадка:</p>
+<ul class="steps">
+<li>илоуплотнители - 2шт;</li>
+<li>декантеры для обезвоживания осадка - 2шт;</li>
+<li>аварийный накопитель осадка – 2 шт.</li>
+</ul>
+</div>
+</div>
+<div class="card source-card" data-keywords="аварийный усреднитель резервуар 2073">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Аварийный резервуар переливных вод</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="source-note">В перечне сооружений указано 2100 м³, а в описании — 2073,6 м³. Оба значения сохранены из исходника.</p>
+<p class="reading-text">Аварийный резервуар (усреднитель) переливных вод</p>
+<p class="reading-text">Аварийный резервуар – это железобетонное сооружение, чаще всего предназначен для использования в случае аварии, сбора переливов и приема аварийных сбросов воды. Объем резервуара -  2073,6 м3.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="водохранилище водоводы 1200 1000 процесс">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Подготовка питьевой воды и подача на блоки</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Описание технологического процесса подготовки питьевой воды.</p>
+<p class="reading-text">Насосно -фильтровальная станция г. Астана производительностью 105 тыс. м3 /сутки представляет собой крупнотоннажные производственные комплексы, работа которых основана на физико-химических процессах, улучшающих качественные показатели воды.</p>
+<p class="reading-text">Вода из Астанинского водохранилища сначала поступает по двум водоводам диаметром 1200 мм, а затем подается на каждый блок по трубам диаметром 1000 мм.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 1 смеситель трубы 700 800 600">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-1 — вихревые смесители</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">В состав сооружений блока БВО №1 входят:</p>
+<p class="reading-text">Смеситель</p>
+<p class="reading-text">Тип - вихревой смеситель;</p>
+<p class="reading-text">Исполнение - металл, толщиной 10 мм;</p>
+<p class="reading-text">Количество смесителей - 2 шт;</p>
+<p class="reading-text">Форма верхней части – квадрат;</p>
+<p class="reading-text">Площадь верхней части – 12,25 м2;</p>
+<p class="reading-text">Высота верхней части – 1,5 м;</p>
+<p class="reading-text">Форма нижней части – усеченная пирамида;</p>
+<p class="reading-text">Объем смесителя - 31,4 м3;</p>
+<p class="reading-text">Время пребывания воды в смесителе - 1,25 мин;</p>
+<p class="reading-text">Диаметр трубопровода подающего воду в смеситель - 700мм.</p>
+<p class="reading-text">Диаметр отводящего трубопровода  - 800мм;</p>
+<p class="reading-text">Диаметр переливного трубопровода  - 600мм.</p>
+<p class="reading-text">Сырая вода поступает в нижную часть вертикального смесителя, которая имеет форму усеченной пирамиды, и поднимается вверх. Перемешивание воды с реагентами происходит за счет вихревого потока при переходе от узкой части смесителя к расширенной. Из верхней части смесителя по желобам через общий коллектор вода поступает в отстойники.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 1 камеры хлопья">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-1 — камеры хлопьеобразования</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Камеры хлопьеобразования</p>
+<p class="reading-text">Количество камер хлопьеобразования - 6 шт;</p>
+<p class="reading-text">Длина камеры хлопьеобразования – 4,7 м;</p>
+<p class="reading-text">Ширина камеры хлопьеобразования – 6 м;</p>
+<p class="reading-text">Высота камеры хлопьеобразования – 3,5 м;</p>
+<p class="reading-text">Рабочий объем камеры хлопьеобразования - 78,1 м3;</p>
+<p class="reading-text">Время пребывания воды в камере хлопьеобразования - 9,36 мин.</p>
+<p class="reading-text">Камеры хлопьеобразования встроены в отстойники. Вода поступает в нижнюю часть камер, медленно поднимаясь и перемешиваясь. Нижняя часть камеры имеет меньшую площадь сечения, поэтому при подъеме происходит гашение скорости. Вода из верхней части камеры хлопьеобразования отводится системой дырчатых труб в 1-ый карман отстойника.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 1 отстойник тонкослойные модули осадок">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-1 — отстойники и сбор осадка</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Горизонтальные отстойники с тонкослойными модулями</p>
+<p class="reading-text">Количество отстойников - 6шт;</p>
+<p class="reading-text">Длина отстойника - 28 м;</p>
+<p class="reading-text">Ширина отстойника – 6 м;</p>
+<p class="reading-text">Высота отстойника – 3,5 м;</p>
+<p class="reading-text">Площадь отстойника – 168 м2.</p>
+<p class="reading-text">Система сбора осадка</p>
+<p class="reading-text">Объем зоны накопления осадка – 36,7 м3;</p>
+<p class="reading-text">Удаление осадка из отстойника – один раз в час;</p>
+<p class="reading-text">Удаление осадка – механическое.</p>
+<p class="reading-text">Система сбора осветленной воды</p>
+<p class="reading-text">Количество труб для сбора осветленной воды - 18 шт;</p>
+<p class="reading-text">Диаметр труб - 300 мм.</p>
+<p class="reading-text">Принцип действия: медленно двигаясь, частицы тяжелее воды оседают на дно отстойника под давлением силы тяжести.</p>
+<p class="reading-text">Система тонкослойных модулей обеспечивает: - ламинарный поток - значительное уменьшение размеров отстойников за счет увеличения осаждающих площадей - значительное уменьшение габаритов горизонтального отстойника при сохранении производительности станции водоподготовки. После отстойников через общий коллектор вода распределяется на фильтры.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 1 фильтры леопольд кварцевый песок промывка 1210 605">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-1 — скорые фильтры и параметры промывки</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Скорые фильтры</p>
+<p class="reading-text">Тип - скорые, открытые;</p>
+<p class="reading-text">Материал исполнения – железобетон;</p>
+<p class="reading-text">Количество фильтров – 12 шт, рабочая площадь одного фильтра 42 м2, с размерами двух рабочих камер площадью 6,0*3,5м каждая.;</p>
+<p class="reading-text">Фильтры на полезную производительность 70 000 м/сут с центральным сборным карманом;</p>
+<p class="reading-text">Высота фильтра - 4,7 м</p>
+<p class="reading-text">Материал загрузки - кварцевый песок.</p>
+<p class="reading-text">Диаметр зерен - 0,7-1,6 мм</p>
+<p class="reading-text">Эквивалентный диаметр зерен 0,8 - 1,0 мм.</p>
+<p class="reading-text">Поддерживающие слои - не предусмотрены.</p>
+<p class="reading-text">Дренаж - дренажная система «Леопольд»</p>
+<p class="reading-text">Промывка фильтров - водовоздушная.</p>
+<p class="reading-text">Дренажная система «Леопольд» является инновационной технологией. Преимущества: - равномерный сбор отфильтрованной воды - равномерное распределение воды и воздуха для промывки фильтра по всей его площади - увеличение срока эксплуатации фильтров.</p>
+<p class="reading-text">Вывод фильтров на промывку осуществляется в автоматическом и ручном режиме, в зависимости от качества фильтрующего материала после каждого фильтра.</p>
+<p class="reading-text">Промывка фильтров осуществляется от насосов установленных в насосной станции 2-го подъема. Скорости фильтрации составят: при интенсивности промывки 8 л/с*м2 подача промывной воды составит 1210 м3/ч, при интенсивности промывки 4 л/с*м2 подача промывной воды составит 605 м3/ч.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 1 промывка инструкция затворы воздух насос стоп">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-1 — порядок промывки из записки</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="source-note">В этом разделе исходник использует обозначения Б2-Ф1, как и в разделе БВО-2. Они сохранены дословно; соответствие конкретному оборудованию уточняется по рабочей инструкции.</p>
+<p class="reading-text">Промывка фильтров</p>
+<p class="reading-text">Порядок промывки фильтра:</p>
+<ol class="steps">
+<li>Получить разрешение у начальника смены до начала промывки фильтров;</li>
+<li>Произвести обход всех фильтров;</li>
+<li>По рации связаться на насосную станцию докладывать о готовности к промывке фильтров;</li>
+<li>В ШУЗ-е закрыть затворы отстойника (Б2-Ф1.1) и резервуара чистой воды РЧВ (Б2-Ф1.2).</li>
+<li>Открыть затворы дренажа (Б2-Ф1.3), промывки (Б2-Ф1.4) и воздуха (Б2-Ф1.5) фильтра.</li>
+<li>По рации дать команду напарнику “ВКЛЮЧИТЬ ВОЗДУХ” на 2 минуты. Через 1 минуту запустить промывочной насос воды с насосной станции 600 оборотов.</li>
+<li>Спустя 2 минуты отключить насос и подачу воздуха.</li>
+<li>По рации дать команду “ВКЛЮЧИТЬ НАСОСЫ” 800-800 оборотов.</li>
+<li>Для удаления загрязнений используем шланг для отбивки пены от стенок фильтра.</li>
+<li>При достижении необходимого качество воды оператор сообщает по рации и даёт команду “ОТКЛЮЧИТЬ НАСОСЫ”.</li>
+<li>С помощью кнопок ШУ3 (Б2-Ф1) закрыть дренаж (Б2-Ф1.3), промывку (Б2-Ф1.4) и воздуха (Б2-Ф1.5).</li>
+<li>Открыть отстойник (Б2-Ф1.1) и резервуар чистой воды РЧВ (Б2-Ф1.2).</li>
+<li>При включении зелёного света на РЧВ необходимо закрыть на 1 минуту 15-20 секунд, по завершении данного этапа следует нажать кнопку СТОП.</li>
+<li>По окончания промывки нужно открыть вентиль d50 на трубопроводе воздуха чтобы спустить остаточную воду и воздух.</li>
+</ol>
+<p class="reading-text">После выполнения всех манипуляций фильтр переводится в рабочий режим.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 2 смеситель трубы 500 600 400">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-2 — вихревые смесители</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">В состав сооружений блока БВО №2</p>
+<p class="reading-text">Смеситель</p>
+<p class="reading-text">Тип - вихревой смеситель;</p>
+<p class="reading-text">Исполнение - металл, толщиной 10 мм;</p>
+<p class="reading-text">Количество смесителей - 2 шт;</p>
+<p class="reading-text">Форма верхней части – квадрат;</p>
+<p class="reading-text">Площадь верхней части – 6,25 м2;</p>
+<p class="reading-text">Высота верхней части – 1,5 м;</p>
+<p class="reading-text">Форма нижней части – усеченная пирамида;</p>
+<p class="reading-text">Объем смесителя - 16,1 м3;</p>
+<p class="reading-text">Время пребывания воды в смесителе - 1,29 мин ;</p>
+<p class="reading-text">Диаметр трубопровода подающего воду в смеситель - 500мм.</p>
+<p class="reading-text">Диаметр отводящего трубопровода  - 600мм;</p>
+<p class="reading-text">Диаметр переливного трубопровода  - 400мм.</p>
+<p class="reading-text">Сырая вода поступает в нижнюю часть вертикального смесителя, которая имеет форму усеченной пирамиды, и поднимается вверх. Перемешивание воды с реагентами происходит за счет вихревого потока при переходе от узкой части смесителя к расширенной. Из верхней части смесителя по желобам через общий коллектор вода поступает в отстойники.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 2 камеры хлопья">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-2 — камеры хлопьеобразования</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Камеры хлопьеобразования</p>
+<p class="reading-text">Количество камер хлопьеобразования - 6 шт;</p>
+<p class="reading-text">Длина камеры хлопьеобразования – 4,7 м;</p>
+<p class="reading-text">Ширина камеры хлопьеобразования – 3 м;</p>
+<p class="reading-text">Высота камеры хлопьеобразования – 3,5 м;</p>
+<p class="reading-text">Рабочий объем камеры хлопьеобразования - 39,1 м3;</p>
+<p class="reading-text">Время пребывания воды в камере хлопьеобразования - 9,37 мин.</p>
+<p class="reading-text">Камеры хлопьеобразования встроены в отстойники. Вода поступает в нижнюю часть камер, медленно поднимаясь и перемешиваясь. Нижняя часть камеры имеет меньшую площадь сечения, поэтому при подъеме происходит гашение скорости. Вода из верхней части камеры хлопьеобразования отводится системой дырчатых труб в 1-ый карман отстойника.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 2 отстойник тонкослойные модули осадок">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-2 — отстойники и сбор осадка</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Горизонтальные отстойники с тонкослойными модулями</p>
+<p class="reading-text">Количество отстойников - 6шт;</p>
+<p class="reading-text">Длина отстойника - 28 м;</p>
+<p class="reading-text">Ширина отстойника – 3 м;</p>
+<p class="reading-text">Высота отстойника – 3,5 м;</p>
+<p class="reading-text">Площадь отстойника – 84 м2.</p>
+<p class="reading-text">Система сбора осадка</p>
+<p class="reading-text">Объем зоны накопления осадка – 18,35 м3;</p>
+<p class="reading-text">Удаление осадка из отстойника – один раз в час;</p>
+<p class="reading-text">Удаление осадка – механическое.</p>
+<p class="reading-text">Система сбора осветленной воды</p>
+<p class="reading-text">Количество труб для сбора осветленной воды - 12 шт;</p>
+<p class="reading-text">Диаметр труб - 250 мм.</p>
+<p class="reading-text">Принцип действия: медленно двигаясь, частицы тяжелее воды оседают на дно отстойника под давлением силы тяжести.</p>
+<p class="reading-text">Система тонкослойных модулей обеспечивает: - ламинарный поток - значительное уменьшение размеров отстойников за счет увеличения осаждающих площадей - значительное уменьшение габаритов горизонтального отстойника при сохранении производительности станции водоподготовки. После отстойников через общий коллектор вода распределяется на фильтры.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 2 фильтры леопольд кварцевый песок промывка 864 432">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-2 — скорые фильтры и параметры промывки</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Скорые фильтры</p>
+<p class="reading-text">Тип - скорые, открытые;</p>
+<p class="reading-text">Материал исполнения – железобетон;</p>
+<p class="reading-text">Количество фильтров – 8 шт, рабочая площадь одного фильтра 30 м2, с размерами двух рабочих камер площадью 6,0*2,5м каждая.;</p>
+<p class="reading-text">Фильтры на полезную производительность 35 000 м/сут - с центральным сборным карманом;</p>
+<p class="reading-text">Высота фильтра - 4,7 м</p>
+<p class="reading-text">Материал загрузки - кварцевый песок.</p>
+<p class="reading-text">Диаметр зерен - 0,7-1,6 мм</p>
+<p class="reading-text">Эквивалентный диаметр зерен 0,8 - 1,0 мм.</p>
+<p class="reading-text">Поддерживающие слои - не предусмотрены.</p>
+<p class="reading-text">Дренаж - дренажная система «Леопольд»</p>
+<p class="reading-text">Промывка фильтров - водовоздушная.</p>
+<p class="reading-text">Дренажная система «Леопольд» является инновационной технологией. Преимущества: - равномерный сбор отфильтрованной воды - равномерное распределение воды и воздуха для промывки фильтра по всей его площади - увеличение срока эксплуатации фильтров.</p>
+<p class="reading-text">Вывод фильтров на промывку осуществляется в автоматическом и ручном режиме, в зависимости от качества фильтрации после каждого фильтра. Промывка фильтров осуществляется от насосов установленных в насосной станции 2-го подъема. Скорости фильтрации составят: при интенсивности промывки 8 л/с*м2 подача промывной воды составит 864 м3/ч, при интенсивности промывки 4 л/с*м2 подача промывной воды составит 432 м3/ч.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="бво 2 промывка инструкция затворы воздух насос стоп">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">БВО-2 — порядок промывки из записки</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="source-note">Обозначения затворов и формулировка шага 13 приведены дословно из записки. Это текст источника; порядок работы определяется утверждённой инструкцией.</p>
+<p class="reading-text">Промывка фильтров</p>
+<p class="reading-text">Порядок промывки фильтра:</p>
+<ol class="steps">
+<li>Получить разрешение у начальника смены до начала промывки фильтров;</li>
+<li>Произвести обход всех фильтров;</li>
+<li>По рации связаться на насосную станцию докладывать о готовности к промывке фильтров;</li>
+<li>В ШУЗ-е закрыть затворы отстойника (Б2-Ф1.1) и резервуара чистой воды РЧВ (Б2-Ф1.2).</li>
+<li>Открыть затворы дренажа (Б2-Ф1.3), промывки (Б2-Ф1.4) и воздуха (Б2-Ф1.5) фильтра.</li>
+<li>По рации дать команду напарнику “ВКЛЮЧИТЬ ВОЗДУХ” на 2 минуты. Через 1 минуту запустить промывочной насос воды с насосной станции 600 оборотов.</li>
+<li>Спустя 2 минуты отключить насос и подачу воздуха.</li>
+<li>По рации дать команду “ВКЛЮЧИТЬ НАСОСЫ” 800-800 оборотов.</li>
+<li>Для удаления загрязнений используем шланг для отбивки пены от стенок фильтра.</li>
+<li>При достижении необходимого качество воды оператор сообщает по рации и даёт команду “ОТКЛЮЧИТЬ НАСОСЫ”.</li>
+<li>С помощью кнопок ШУ3 (Б2-Ф1) закрыть дренаж (Б2-Ф1.3), промывку (Б2-Ф1.4) и воздуха (Б2-Ф1.5).</li>
+<li>Открыть отстойник (Б2-Ф1.1) и резервуар чистой воды РЧВ (Б2-Ф1.2).</li>
+<li>При включении зелёного света на РЧВ необходимо закрыть на 1 минуту 15-20 секунд, по завершении данного этапа следует нажать кнопку СТОП.</li>
+<li>По окончания промывки нужно открыть вентиль d50 на трубопроводе воздуха чтобы спустить остаточную воду и воздух.</li>
+</ol>
+<p class="reading-text">После выполнения всех манипуляций фильтр переводится в рабочий режим.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="оха оксихлорид коагулянт дозирование концентрация 20 22">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">ОХА — приготовление и дозирование</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="source-note">Формула реагента воспроизведена в том виде, в котором она напечатана в записке.</p>
+<p class="reading-text">На НФС применяются следующие реагенты</p>
+<p class="reading-text">Коагулянт (оксихлорид алюминия) - предназначен для дестабилизации мельчайших коллоидных и взвешенных частиц, обуславливающих мутность воды, и их укрупнения вследствие взаимного слипания под действием сил молекулярного притяжения. Химическая формула - А12(OH) C1. Поступает на станцию в жидком виде. Концентрация - 20-22%. Разбавляется водой до необходимой концентрации в баке мокрого хранения и насосами-дозаторами подается в смесители блока БВО №1 и БВО №2.</p>
+<p class="reading-text">Система дозирования автоматическая. В зависимости от мутности исходной воды меняется доза коагулянта (от 1,0-3,0 мг/л).</p>
+<p class="reading-text">Раствор оксихлорида является агрессивной средой (слабая кислота), поэтому арматура выполнена из полиэтилена, насосы из химически стойкой стали, а баки изнутри покрыты кислотостойкой футеровкой.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="флокулянт престол растворный рабочий бак">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Флокулянт — приготовление и дозирование</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Флокулянт - предназначен для укрупнения дестабилизированных частиц за счет удлинения цепочки хлопьев коагулянта («Престол-650»). На станцию «Престол-650» поступает в мешках по 25 кг. На вид - порошок белого цвета. Растворение осуществляется механической пропеллерообразной мешалкой в специальной емкости (далее - растворный бак), затем в блоке БВО №1 и №2 перекачивается в рабочий бак и дозируется самотеком в смесители.</p>
+<p class="reading-text">Система дозирования автоматическая и ручная. Доза - 0,05-0,15 мг/л.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="гпхн соль рассол гипохлорит электролиз prominnet">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">ГПХН — получение из поваренной соли</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="source-note">Концентрация рассола «35 мг/л» приведена в исходнике; единицы здесь не исправлены предположением.</p>
+<p class="reading-text">Обеззараживание</p>
+<p class="reading-text">Для обеззараживания воды применяется гипохлорит натрия. Гипохлорит натрия обладает высокими обеззараживающими свойствами и безопасен в производстве. Приготовление и дозирование гипохлорита натрия производится в автоматическом режиме из поваренной соли на электролизных установках «ProMinnet». Поваренная соль биг –беги в мешках складируется в помещении склада соли. На первом этапе производится замачивание и разведение соли (приготовление рассола с концентрацией 35 мг/л).</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="контроль отбор проб периодичность журнал хлор мутность алюминий">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Производственный контроль и точки отбора</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Точки отбора пробы воды</p>
+<p class="reading-text">Лабораторно -производственный контроль испытательной лабораторий ГКП «Астана су арнасы» предполагает контроль качества воды на всех этапах: исходная вода, по технологической схеме очистки до поступления в разводящие сети города. Для обеспечения требуемых параметров питьевой воды в ИЛ разработана рабочая программа производственного контроля качества воды, в которой предусмотрены контролирующие показатели воды, точки отбора, периодичность отбора проб.</p>
+<p class="reading-text">В технологическом отделе ведётся круглосуточный контроль качества воды по технологической схеме очистки, т.е. на каждом этапе очистки:</p>
+<ul class="steps">
+<li>при поступлении на очистные сооружения (исходная вода);</li>
+<li>смесители ( контроль дозы вводимого хлора, коагулянта, флокулянта);</li>
+<li>после оборотной воды ( во время промывки);</li>
+<li>общий коллектор канала осветленной воды;</li>
+<li>фильтры, канал фильтрованной воды;</li>
+<li>канал чистой воды ( контроль дозы вторичного хлора);</li>
+<li>насосы;</li>
+<li>перед поступлением в разводящие сети города (УФО).</li>
+</ul>
+<p class="reading-text">Каждый час контролируется содержание остаточного хлора и каждые два часа контролируется мутности перед поступлением в разводящие сети города. Основные показатели, быстроизменяющиеся в процессе очистки, например, мутность, цветность, остаточный хлор контролируются часто. Часть технологических показателей определяют с целью контроля за условиями протекания процесса обработки воды. К их числу относятся: температура, рН , щёлочность.</p>
+<p class="reading-text">Так как для осветления сырой воды на очистных сооружениях применяется коагулянт оксихлорид алюминия, то ежедневно при поступлении в разодящие сети города вода контролируется на остаточный алюминий.</p>
+<p class="reading-text">Все результаты анализов воды передаются начальнику смены, и заносятся в специальные журналы.</p>
+</div>
+</div>
+<div class="card source-card" data-keywords="автор инженер технолог">
+<button type="button" class="card-header" aria-expanded="false" onclick="toggleCard(this)"><span class="card-title">Автор пояснительной записки</span><span class="icon" aria-hidden="true"></span></button>
+<div class="card-body">
+<p class="reading-text">Составила   Әлкебаева А.Ж.</p>
+<p class="reading-text">Инженер - технолог</p>
+</div>
+</div>
+</section>
+<p id="searchEmpty" class="section-note" role="status" hidden>Ничего не найдено. Попробуйте другое слово или категорию.</p>
+  <footer>НФС-3 · Лабораторный справочник</footer>
+  <script src="handbook.js" defer></script>
+</body>
+</html>

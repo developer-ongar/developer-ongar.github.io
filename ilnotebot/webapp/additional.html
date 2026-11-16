@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <title>Дополнительный анализ · НФС-3</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="additional.css">
+    <script type="module" src="additional.js"></script>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <div class="eyebrow">НФС-3 · Лабораторный журнал</div>
+            <h1>Дополнительный<br>анализ</h1>
+            <p class="subtitle">Внеплановый отбор проб</p>
+            <div class="context" aria-label="Данные отбора">
+                <span id="context-date">—</span><span id="context-time">—</span><span id="context-block">—</span>
+            </div>
+        </header>
+        <div id="session-notice" class="notice" hidden></div>
+        <form id="analysis-form" novalidate>
+            <section class="reagents" aria-labelledby="reagents-title">
+                <h2 id="reagents-title">ОХА, ГПХН, пищевая соль и вода</h2>
+                <p class="help">Отдельные образцы, без привязки к БВО и точкам отбора. Заполните только выполненные определения.</p>
+                <div id="reagent-groups"></div>
+            </section>
+            <section class="water-section" aria-labelledby="water-title">
+                <div class="section-title"><h2 id="water-title">Анализ воды</h2><span id="point-count" class="count">0 точек</span></div>
+                <p class="help">Добавьте нужные точки и заполните только измеренные показатели. Все поля доступны в любое время.</p>
+                <div class="point-picker">
+                    <label class="sr-only" for="point-select">Место отбора</label>
+                    <select id="point-select"><option value="">Выберите место отбора</option></select>
+                    <button id="add-point" type="button" class="add-button" disabled>Добавить</button>
+                </div>
+                <div id="points"></div>
+                <div id="empty-state" class="empty-state">Точки пока не добавлены.<br>Добавьте только нужные места отбора.</div>
+            </section>
+            <div id="form-error" class="error" role="alert" hidden></div>
+            <footer class="submit-area">
+                <p>Данные сохранятся в отдельный анализ.<br>Для проверки PDF нажмите в боте<br>«Посмотреть PDF дополнительного анализа».<br>Инженерам отчёт уйдёт после вашего подтверждения.</p>
+                <button id="submit" type="submit" class="submit-button">Сохранить данные</button>
+            </footer>
+        </form>
+    </main>
+</body>
+</html>
